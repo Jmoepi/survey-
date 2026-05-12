@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CompliSA — Survey Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --teal:#0B5E47; --teal-mid:#1D9E75; --teal-light:#E1F5EE; --rule:#D8D6CF;
+      --ink:#1A1A18; --ink2:#3D3D3A; --ink3:#6B6B67; --bg:#FAFAF8; --white:#FFFFFF;
+      --red:#B92B2B; --red-light:#FBEAEA;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;min-height:100vh}
+    header{background:var(--teal);color:#fff;padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+    header h1{font-family:'DM Serif Display',serif;font-weight:400;font-size:20px}
+    header .meta{font-size:12px;opacity:.85}
+    main{max-width:1100px;margin:0 auto;padding:22px 18px 50px}
+    .card{background:#fff;border:1px solid var(--rule);border-radius:12px;padding:16px 16px;margin-bottom:14px}
+    .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+    .row > *{flex:1}
+    .btn{padding:10px 14px;border-radius:10px;border:1px solid var(--rule);background:#fff;color:var(--ink2);cursor:pointer;font-weight:500}
+    .btn.primary{background:var(--teal);border-color:var(--teal);color:#fff}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+    input{width:100%;padding:10px 12px;border:1px solid var(--rule);border-radius:10px;font:inherit}
+    input:focus{outline:none;border-color:var(--teal-mid)}
+    .hint{font-size:12px;color:var(--ink3);margin-top:6px}
+    .error{display:none;margin-top:10px;background:var(--red-light);color:var(--red);border-left:3px solid var(--red);padding:10px 12px;border-radius:10px;font-size:13px}
+    .error.show{display:block}
+    .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+    .stat{background:var(--teal-light);border:1px solid rgba(11,94,71,.18);border-radius:12px;padding:12px 12px}
+    .stat .k{font-size:12px;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em}
+    .stat .v{font-size:22px;font-weight:500;color:var(--ink);margin-top:4px}
+    .tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+    .table-wrap{overflow:auto;border:1px solid var(--rule);border-radius:12px}
+    table{border-collapse:separate;border-spacing:0;width:100%;min-width:980px;background:#fff}
+    th,td{padding:10px 10px;border-bottom:1px solid var(--rule);vertical-align:top}
+    th{position:sticky;top:0;background:#fff;font-size:12px;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;text-align:left}
+    tr:hover td{background:#fafbf9}
+    .pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--rule);padding:3px 8px;border-radius:999px;font-size:12px;color:var(--ink2);white-space:nowrap}
+    .pill.employer{border-color:rgba(11,94,71,.35);background:rgba(11,94,71,.06)}
+    .pill.practitioner{border-color:rgba(29,158,117,.4);background:rgba(29,158,117,.08)}
+    .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-size:12px;color:var(--ink2)}
+    details{border:1px solid var(--rule);border-radius:10px;padding:8px 10px;background:#fff}
+    details > summary{cursor:pointer;font-weight:500;color:var(--teal);font-size:13px;list-style:none}
+    details > summary::-webkit-details-marker{display:none}
+    .kv{margin-top:10px;display:grid;grid-template-columns:180px 1fr;gap:6px 10px}
+    .kv .k{font-size:12px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em}
+    .kv .v{font-size:13px;color:var(--ink);white-space:pre-wrap}
+    .muted{color:var(--ink3)}
+    @media (max-width:900px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>CompliSA — Survey Dashboard</h1>
+      <div class="meta" id="statusLine">Not connected</div>
+    </div>
+    <div class="row" style="max-width:460px;flex:0 0 auto;">
+      <button class="btn" id="logoutBtn" style="display:none;">Log out</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="card" id="configCard">
+      <div style="font-family:'DM Serif Display',serif;font-size:18px;margin-bottom:10px">Configuration</div>
+      <div class="hint">Paste the same Supabase Project URL and anon key used in the survey file.</div>
+      <div class="row" style="margin-top:12px">
+        <div>
+          <div class="hint" style="margin-bottom:6px">Supabase Project URL</div>
+          <input id="sbUrl" placeholder="https://xxxx.supabase.co" />
+        </div>
+        <div>
+          <div class="hint" style="margin-bottom:6px">Supabase anon key</div>
+          <input id="sbAnon" placeholder="eyJhbGciOi..." />
+        </div>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn primary" id="saveConfigBtn">Save config</button>
+        <div class="hint">Stored locally in your browser only.</div>
+      </div>
+    </div>
+
+    <div class="card" id="authCard">
+      <div style="font-family:'DM Serif Display',serif;font-size:18px;margin-bottom:10px">Admin login</div>
+      <div class="hint">Use a Supabase user that is in the `dashboard_admins` allowlist (see `supabase_schema.sql`).</div>
+      <div class="row" style="margin-top:12px">
+        <div>
+          <div class="hint" style="margin-bottom:6px">Email</div>
+          <input id="email" type="email" placeholder="admin@yourdomain.com" />
+        </div>
+        <div>
+          <div class="hint" style="margin-bottom:6px">Password</div>
+          <input id="password" type="password" placeholder="••••••••" />
+        </div>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn primary" id="loginBtn">Log in</button>
+        <div class="hint">If you haven't created an admin user yet, create one in Supabase Auth.</div>
+      </div>
+      <div class="error" id="authError"></div>
+    </div>
+
+    <div class="card" id="statsCard" style="display:none">
+      <div class="tools">
+        <div style="font-family:'DM Serif Display',serif;font-size:18px">Live overview</div>
+        <div class="row" style="flex:0 0 auto;gap:10px">
+          <button class="btn" id="exportCsvBtn">Export CSV</button>
+          <button class="btn" id="exportXlsxBtn">Export Excel</button>
+          <button class="btn" id="refreshBtn">Refresh</button>
+        </div>
+      </div>
+      <hr style="border:none;border-top:1px solid var(--rule);margin:14px 0">
+      <div class="stats">
+        <div class="stat"><div class="k">Total responses</div><div class="v" id="statTotal">0</div></div>
+        <div class="stat"><div class="k">Employers</div><div class="v" id="statEmployers">0</div></div>
+        <div class="stat"><div class="k">Practitioners</div><div class="v" id="statPractitioners">0</div></div>
+        <div class="stat"><div class="k">Last response</div><div class="v" style="font-size:14px;margin-top:8px" id="statLast">—</div></div>
+      </div>
+    </div>
+
+    <div class="card" id="tableCard" style="display:none">
+      <div style="font-family:'DM Serif Display',serif;font-size:18px;margin-bottom:10px">Responses</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Created</th>
+              <th>Role</th>
+              <th>Contact</th>
+              <th>All answers</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div class="hint" style="margin-top:10px">Live updates require Realtime enabled for `survey_responses`.</div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script>
+    const LS_URL = 'complisa_sb_url';
+    const LS_ANON = 'complisa_sb_anon';
+
+    const els = {
+      statusLine: document.getElementById('statusLine'),
+      configCard: document.getElementById('configCard'),
+      sbUrl: document.getElementById('sbUrl'),
+      sbAnon: document.getElementById('sbAnon'),
+      saveConfigBtn: document.getElementById('saveConfigBtn'),
+      authCard: document.getElementById('authCard'),
+      email: document.getElementById('email'),
+      password: document.getElementById('password'),
+      loginBtn: document.getElementById('loginBtn'),
+      logoutBtn: document.getElementById('logoutBtn'),
+      authError: document.getElementById('authError'),
+      statsCard: document.getElementById('statsCard'),
+      tableCard: document.getElementById('tableCard'),
+      statTotal: document.getElementById('statTotal'),
+      statEmployers: document.getElementById('statEmployers'),
+      statPractitioners: document.getElementById('statPractitioners'),
+      statLast: document.getElementById('statLast'),
+      tbody: document.getElementById('tbody'),
+      exportCsvBtn: document.getElementById('exportCsvBtn'),
+      exportXlsxBtn: document.getElementById('exportXlsxBtn'),
+      refreshBtn: document.getElementById('refreshBtn'),
+    };
+
+    let supabaseClient = null;
+    let realtimeChannel = null;
+    let rowsCache = [];
+
+    function setStatus(msg){ els.statusLine.textContent = msg; }
+    function showError(msg){
+      els.authError.textContent = msg || '';
+      els.authError.classList.toggle('show', !!msg);
+    }
+
+    function loadConfig(){
+      els.sbUrl.value = localStorage.getItem(LS_URL) || '';
+      els.sbAnon.value = localStorage.getItem(LS_ANON) || '';
+    }
+
+    function saveConfig(){
+      localStorage.setItem(LS_URL, (els.sbUrl.value || '').trim());
+      localStorage.setItem(LS_ANON, (els.sbAnon.value || '').trim());
+    }
+
+    function ensureClient(){
+      const url = (localStorage.getItem(LS_URL) || '').trim();
+      const anon = (localStorage.getItem(LS_ANON) || '').trim();
+      if (!url || !anon) return null;
+      supabaseClient = window.supabase.createClient(url, anon);
+      return supabaseClient;
+    }
+
+    function formatDate(iso){
+      try {
+        const d = new Date(iso);
+        return d.toLocaleString();
+      } catch { return iso || ''; }
+    }
+
+    function rolePill(role){
+      const r = (role || '').toLowerCase();
+      const cls = r.includes('pract') ? 'practitioner' : 'employer';
+      return `<span class="pill ${cls}">${role || '—'}</span>`;
+    }
+
+    function safe(v){ return (v === null || v === undefined) ? '' : String(v); }
+
+    function escapeHtml(s){
+      return String(s)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'","&#039;");
+    }
+
+    function labelForKey(key){
+      const map = {
+        role: 'Role',
+        name: 'Name',
+        company: 'Company/Firm',
+        email: 'Email',
+        phone: 'Phone',
+        open: 'Open response',
+        followup: 'Follow-up?',
+        e_q1: 'Q1 Employees',
+        e_q2: 'Q2 Province',
+        e_q3: 'Q3 Registered PAYE/UIF',
+        e_q4: 'Q4 Heard of uFiling',
+        e_q5: 'Q5 Registered on uFiling',
+        e_q6: 'Q6 SARS vs DOL awareness',
+        e_q7: 'Q7 UI-19 handling',
+        e_q8: 'Q8 Claim rejected/delayed',
+        e_q9: 'Q9 SARS/UIF data sharing awareness',
+        e_q10:'Q10 Compliance certificate proposal',
+        e_q11:'Q11 Time per month',
+        e_q12:'Q12 Value of automation',
+        e_q13:'Q13 Willingness to pay',
+        p_q1: 'P1 # Clients',
+        p_q2: 'P2 Labour Practitioner registered',
+        p_q3: 'P3 Client compliance proportion',
+        p_q4: 'P4 Submission method',
+        p_q5: 'P5 Penalties/claim issues seen',
+        p_q6: 'P6 Hours per month',
+        p_q7: 'P7 Would use platform',
+        p_q8: 'P8 Willingness to pay',
+      };
+      return map[key] || key;
+    }
+
+    function allAnswersDetails(row){
+      const p = row.payload || {};
+
+      // Show keys in a stable, friendly order, then include any extras that may appear later.
+      const baseKeys = [
+        'role','name','company','email','phone',
+        'e_q1','e_q2','e_q3','e_q4','e_q5','e_q6','e_q7','e_q8','e_q9','e_q10','e_q11','e_q12','e_q13',
+        'p_q1','p_q2','p_q3','p_q4','p_q5','p_q6','p_q7','p_q8',
+        'open','followup'
+      ];
+
+      const allKeys = Array.from(new Set([
+        ...baseKeys,
+        ...Object.keys(p || {})
+      ]));
+
+      const kvRows = allKeys.map(k => {
+        const raw = p?.[k];
+        const val = (raw === undefined || raw === null || raw === '') ? '' : String(raw);
+        return `
+          <div class="k">${escapeHtml(labelForKey(k))}</div>
+          <div class="v">${val ? escapeHtml(val) : '<span class="muted">—</span>'}</div>
+        `;
+      }).join('');
+
+      return `
+        <details>
+          <summary>View all answers</summary>
+          <div class="kv">${kvRows}</div>
+        </details>
+      `;
+    }
+
+    function renderTable(){
+      els.tbody.innerHTML = rowsCache.map(r => {
+        const contact = [r.name, r.company, r.email, r.phone].filter(Boolean).join('<br>');
+        return `
+          <tr>
+            <td>${formatDate(r.created_at)}</td>
+            <td>${rolePill(r.role)}</td>
+            <td>${contact || '<span class="hint">Anonymous</span>'}</td>
+            <td>${allAnswersDetails(r)}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function updateStats(){
+      const total = rowsCache.length;
+      const employers = rowsCache.filter(r => (r.role || '').toLowerCase().includes('employer')).length;
+      const practitioners = rowsCache.filter(r => (r.role || '').toLowerCase().includes('practitioner')).length;
+      const last = rowsCache[0]?.created_at ? formatDate(rowsCache[0].created_at) : '—';
+      els.statTotal.textContent = total;
+      els.statEmployers.textContent = employers;
+      els.statPractitioners.textContent = practitioners;
+      els.statLast.textContent = last;
+    }
+
+    function flattenForExport(r){
+      const p = r.payload || {};
+      return {
+        id: r.id,
+        created_at: r.created_at,
+        role: r.role,
+        name: r.name,
+        company: r.company,
+        email: r.email,
+        phone: r.phone,
+        payload_json: JSON.stringify(p),
+        open: p.open || '',
+        followup: p.followup || '',
+        ...p
+      };
+    }
+
+    function downloadBlob(filename, blob){
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function exportCsv(){
+      const data = rowsCache.map(flattenForExport);
+      const cols = Array.from(new Set(data.flatMap(o => Object.keys(o))));
+      const esc = (v) => {
+        const s = (v === null || v === undefined) ? '' : String(v);
+        return /[",\n]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s;
+      };
+      const lines = [
+        cols.map(esc).join(','),
+        ...data.map(row => cols.map(c => esc(row[c])).join(','))
+      ];
+      downloadBlob(`complisa_survey_${new Date().toISOString().slice(0,10)}.csv`, new Blob([lines.join('\n')], {type:'text/csv;charset=utf-8'}));
+    }
+
+    function exportXlsx(){
+      const data = rowsCache.map(flattenForExport);
+      const ws = XLSX.utils.json_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'responses');
+      XLSX.writeFile(wb, `complisa_survey_${new Date().toISOString().slice(0,10)}.xlsx`);
+    }
+
+    async function loadRows(){
+      setStatus('Loading responses…');
+      const { data, error } = await supabaseClient
+        .from('survey_responses')
+        .select('id, created_at, role, name, company, email, phone, payload')
+        .order('created_at', { ascending: false })
+        .limit(1000);
+      if (error) throw error;
+      rowsCache = data || [];
+      renderTable();
+      updateStats();
+      setStatus(`Connected · showing ${rowsCache.length} responses`);
+    }
+
+    function showAuthedUI(){
+      els.statsCard.style.display = '';
+      els.tableCard.style.display = '';
+      els.logoutBtn.style.display = '';
+      els.authCard.style.display = 'none';
+    }
+
+    function showLoggedOutUI(){
+      els.statsCard.style.display = 'none';
+      els.tableCard.style.display = 'none';
+      els.logoutBtn.style.display = 'none';
+      els.authCard.style.display = '';
+    }
+
+    async function attachRealtime(){
+      if (realtimeChannel) {
+        try { await supabaseClient.removeChannel(realtimeChannel); } catch {}
+        realtimeChannel = null;
+      }
+      realtimeChannel = supabaseClient
+        .channel('survey_responses_changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'survey_responses' }, () => {
+          loadRows().catch(err => console.error(err));
+        })
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED') setStatus('Connected · live updates on');
+        });
+    }
+
+    async function bootstrap(){
+      loadConfig();
+      const client = ensureClient();
+      if (!client) {
+        setStatus('Not connected · set Supabase config');
+        showLoggedOutUI();
+        return;
+      }
+
+      const { data: { session } } = await client.auth.getSession();
+      if (session) {
+        showAuthedUI();
+        await loadRows();
+        await attachRealtime();
+      } else {
+        showLoggedOutUI();
+        setStatus('Connected · please log in');
+      }
+    }
+
+    els.saveConfigBtn.addEventListener('click', async () => {
+      saveConfig();
+      showError('');
+      await bootstrap();
+    });
+
+    els.loginBtn.addEventListener('click', async () => {
+      showError('');
+      const client = ensureClient();
+      if (!client) { showError('Missing Supabase config.'); return; }
+      els.loginBtn.disabled = true;
+      els.loginBtn.textContent = 'Logging in…';
+      try {
+        const { error } = await client.auth.signInWithPassword({
+          email: (els.email.value || '').trim(),
+          password: els.password.value || ''
+        });
+        if (error) throw error;
+        showAuthedUI();
+        await loadRows();
+        await attachRealtime();
+      } catch (e) {
+        showError(e?.message || 'Login failed.');
+      } finally {
+        els.loginBtn.disabled = false;
+        els.loginBtn.textContent = 'Log in';
+      }
+    });
+
+    els.logoutBtn.addEventListener('click', async () => {
+      if (!supabaseClient) return;
+      await supabaseClient.auth.signOut();
+      showLoggedOutUI();
+      setStatus('Connected · logged out');
+    });
+
+    els.exportCsvBtn.addEventListener('click', exportCsv);
+    els.exportXlsxBtn.addEventListener('click', exportXlsx);
+    els.refreshBtn.addEventListener('click', () => loadRows().catch(e => showError(e?.message || 'Refresh failed.')));
+
+    bootstrap().catch(err => {
+      console.error(err);
+      setStatus('Error');
+      showError(err?.message || 'Unexpected error.');
+    });
+  </script>
+</body>
+</html>
+
