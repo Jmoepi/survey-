@@ -614,8 +614,8 @@ function prevStep() {
       npm run build replaces '__COMPLISA_TOKEN_*__' placeholders below.
    3) Or add meta tags complisa-supabase-url / complisa-supabase-anon-key in head.
    ────────────────────────────────────────────────────────────────────────── */
-const SUPABASE_URL_FALLBACK = "";
-const SUPABASE_ANON_KEY_FALLBACK = "";
+const SUPABASE_URL_FALLBACK = '__COMPLISA_TOKEN_SUPABASE_URL__';
+const SUPABASE_ANON_KEY_FALLBACK = '__COMPLISA_TOKEN_SUPABASE_ANON_KEY__';
 
 function readMeta(name) {
   const el = document.querySelector(`meta[name="${name}"]`);
@@ -754,44 +754,52 @@ async function submitSurvey() {
   try {
     const sb = getSupabaseClient();
     if (!sb) {
-      console.warn('CompliSA survey: Supabase not configured — logging response to console only.');
+      if (btn) { btn.disabled = false; btn.textContent = 'Submit responses ✓'; }
+      alert(
+        'Survey cannot save responses: Supabase URL/key are missing or invalid.\n\n' +
+        'If you deploy on Vercel, set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY and redeploy.\n' +
+        'Open the browser developer console (F12) for details.'
+      );
+      console.warn('CompliSA survey: Supabase not configured — response was NOT saved.');
       console.table(collectData());
-    } else {
-      const payload = collectData();
-
-      var row = {
-        role: payload.role || null,
-        name: payload.name || null,
-        company: payload.company || null,
-        email: payload.email || null,
-        phone: payload.phone || null,
-        source: 'web',
-        survey_schema_version: SURVEY_SCHEMA_VERSION,
-        payload: payload,
-        user_agent: navigator.userAgent || null
-      };
-
-      var res = await sb.from('survey_responses').insert(row);
-
-      if (res.error) {
-        var msg = res.error.message || '';
-
-        if (
-          typeof msg === 'string' &&
-          (msg.indexOf('survey_schema_version') !== -1 ||
-            msg.indexOf('Could not find') !== -1 ||
-            msg.indexOf('schema cache') !== -1 ||
-            msg.indexOf('source') !== -1)
-        ) {
-          var minimal = Object.assign({}, row);
-          delete minimal.source;
-          delete minimal.survey_schema_version;
-          res = await sb.from('survey_responses').insert(minimal);
-        }
-
-        if (res.error) throw res.error;
-      }
+      return;
     }
+
+    const payload = collectData();
+
+    var row = {
+      role: payload.role || null,
+      name: payload.name || null,
+      company: payload.company || null,
+      email: payload.email || null,
+      phone: payload.phone || null,
+      source: 'web',
+      survey_schema_version: SURVEY_SCHEMA_VERSION,
+      payload: payload,
+      user_agent: navigator.userAgent || null
+    };
+
+    var res = await sb.from('survey_responses').insert(row);
+
+    if (res.error) {
+      var msg = res.error.message || '';
+
+      if (
+        typeof msg === 'string' &&
+        (msg.indexOf('survey_schema_version') !== -1 ||
+          msg.indexOf('Could not find') !== -1 ||
+          msg.indexOf('schema cache') !== -1 ||
+          msg.indexOf('source') !== -1)
+      ) {
+        var minimal = Object.assign({}, row);
+        delete minimal.source;
+        delete minimal.survey_schema_version;
+        res = await sb.from('survey_responses').insert(minimal);
+      }
+
+      if (res.error) throw res.error;
+    }
+
   } catch (err) {
     console.error('Submission error:', err);
     if (btn) { btn.disabled = false; btn.textContent = 'Submit responses ✓'; }

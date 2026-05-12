@@ -104,6 +104,7 @@
     </div>
 
     <div class="card" id="statsCard" style="display:none">
+      <div id="adminBanner" class="hint" style="display:none;background:#fdf0dc;border:1px solid #e8c170;color:#5c4a1f;padding:12px 14px;border-radius:10px;margin-bottom:14px;line-height:1.55;font-size:13px"></div>
       <div class="tools">
         <div style="font-family:'DM Serif Display',serif;font-size:18px">Live overview</div>
         <div class="row" style="flex:0 0 auto;gap:10px">
@@ -147,8 +148,8 @@
     const LS_ANON = 'complisa_sb_anon';
 
     /* Replaced at deploy by scripts/inject-env.js when Vercel env vars are set */
-    const DEPLOY_SUPABASE_URL = "";
-    const DEPLOY_SUPABASE_ANON_KEY = "";
+    const DEPLOY_SUPABASE_URL = '__COMPLISA_TOKEN_SUPABASE_URL__';
+    const DEPLOY_SUPABASE_ANON_KEY = '__COMPLISA_TOKEN_SUPABASE_ANON_KEY__';
 
     function deployOrEmpty(v) {
       if (!v || String(v).indexOf('__COMPLISA_TOKEN_') !== -1) return '';
@@ -177,6 +178,7 @@
       exportCsvBtn: document.getElementById('exportCsvBtn'),
       exportXlsxBtn: document.getElementById('exportXlsxBtn'),
       refreshBtn: document.getElementById('refreshBtn'),
+      adminBanner: document.getElementById('adminBanner'),
     };
 
     let supabaseClient = null;
@@ -393,6 +395,47 @@
       setStatus(`Connected · showing ${rowsCache.length} responses`);
     }
 
+    /** RLS only allows SELECT if auth.uid() is in dashboard_admins — otherwise data is []. */
+    async function checkDashboardAllowlisted(){
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) return false;
+      const { data, error } = await supabaseClient
+        .from('dashboard_admins')
+        .select('user_id')
+        .eq('user_id', session.user.id)
+        .maybeSingle();
+      if (error) {
+        els.adminBanner.style.display = 'block';
+        els.adminBanner.innerHTML =
+          '<strong>Could not verify admin access.</strong> ' + escapeHtml(error.message);
+        return false;
+      }
+      if (!data) {
+        els.adminBanner.style.display = 'block';
+        els.adminBanner.innerHTML =
+          '<strong>Your login is not allowlisted to read responses.</strong> In Supabase SQL Editor run ' +
+          '<code>insert into public.dashboard_admins (user_id) values (\'…your auth user uuid…\');</code> ' +
+          '(see README). Until then, Row Level Security returns no rows even if submissions exist.';
+        return false;
+      }
+      els.adminBanner.style.display = 'none';
+      els.adminBanner.innerHTML = '';
+      return true;
+    }
+
+    async function loadDashboardData(){
+      const ok = await checkDashboardAllowlisted();
+      if (!ok) {
+        rowsCache = [];
+        renderTable();
+        updateStats();
+        setStatus('Logged in · fix allowlist to load responses');
+        return;
+      }
+      await loadRows();
+      await attachRealtime();
+    }
+
     function showAuthedUI(){
       els.statsCard.style.display = '';
       els.tableCard.style.display = '';
@@ -405,6 +448,7 @@
       els.tableCard.style.display = 'none';
       els.logoutBtn.style.display = 'none';
       els.authCard.style.display = '';
+      if (els.adminBanner) { els.adminBanner.style.display = 'none'; els.adminBanner.innerHTML = ''; }
     }
 
     async function attachRealtime(){
@@ -434,8 +478,7 @@
       const { data: { session } } = await client.auth.getSession();
       if (session) {
         showAuthedUI();
-        await loadRows();
-        await attachRealtime();
+        await loadDashboardData();
       } else {
         showLoggedOutUI();
         setStatus('Connected · please log in');
@@ -461,8 +504,7 @@
         });
         if (error) throw error;
         showAuthedUI();
-        await loadRows();
-        await attachRealtime();
+        await loadDashboardData();
       } catch (e) {
         showError(e?.message || 'Login failed.');
       } finally {
@@ -480,7 +522,9 @@
 
     els.exportCsvBtn.addEventListener('click', exportCsv);
     els.exportXlsxBtn.addEventListener('click', exportXlsx);
-    els.refreshBtn.addEventListener('click', () => loadRows().catch(e => showError(e?.message || 'Refresh failed.')));
+    els.refreshBtn.addEventListener('click', () =>
+      loadDashboardData().catch(e => showError(e?.message || 'Refresh failed.'))
+    );
 
     bootstrap().catch(err => {
       console.error(err);

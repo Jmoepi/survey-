@@ -83,6 +83,20 @@ Open `dashboard.html` in a browser:
 3) You’ll see live updates as new survey responses arrive
 4) Export data via **Export CSV** or **Export Excel**
 
+### Submissions not showing on the dashboard?
+
+1. **Confirm the survey actually saved** — In Supabase **Table Editor → `survey_responses`**, check whether new rows appear when you submit. If there are no rows, the survey is not reaching the database (wrong/missing Vercel env keys, or opening `index.html` from disk without injected credentials).
+
+2. **Allowlisted admin user** — Reads use Row Level Security: only users listed in **`public.dashboard_admins`** can `SELECT` responses. If your Auth email logs in but was never inserted into `dashboard_admins`, the dashboard query returns **zero rows with no error**. Copy your user id from **Authentication → Users** and run:
+
+```sql
+insert into public.dashboard_admins (user_id)
+values ('PASTE_UUID_FROM_AUTH_USERS_HERE')
+on conflict (user_id) do nothing;
+```
+
+3. **Same Supabase project** — Survey and dashboard must use the **same** project URL and anon key (Vercel env vs dashboard **Save config**).
+
 ## Notes / security
 
 - The survey allows **anon inserts only** (no anonymous reads).
