@@ -1,0 +1,8 @@
+{
+  "name": "complisa-validation-survey",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/inject-env.js",
+    "vercel-build": "node scripts/inject-env.js"
+  }
+}

@@ -140,11 +140,20 @@
     </div>
   </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script>
     const LS_URL = 'complisa_sb_url';
     const LS_ANON = 'complisa_sb_anon';
+
+    /* Replaced at deploy by scripts/inject-env.js when Vercel env vars are set */
+    const DEPLOY_SUPABASE_URL = '__COMPLISA_TOKEN_SUPABASE_URL__';
+    const DEPLOY_SUPABASE_ANON_KEY = '__COMPLISA_TOKEN_SUPABASE_ANON_KEY__';
+
+    function deployOrEmpty(v) {
+      if (!v || String(v).indexOf('__COMPLISA_TOKEN_') !== -1) return '';
+      return String(v).trim();
+    }
 
     const els = {
       statusLine: document.getElementById('statusLine'),
@@ -181,8 +190,12 @@
     }
 
     function loadConfig(){
-      els.sbUrl.value = localStorage.getItem(LS_URL) || '';
-      els.sbAnon.value = localStorage.getItem(LS_ANON) || '';
+      var u = localStorage.getItem(LS_URL) || '';
+      var a = localStorage.getItem(LS_ANON) || '';
+      if (!u) u = deployOrEmpty(DEPLOY_SUPABASE_URL);
+      if (!a) a = deployOrEmpty(DEPLOY_SUPABASE_ANON_KEY);
+      els.sbUrl.value = u;
+      els.sbAnon.value = a;
     }
 
     function saveConfig(){
@@ -191,8 +204,10 @@
     }
 
     function ensureClient(){
-      const url = (localStorage.getItem(LS_URL) || '').trim();
-      const anon = (localStorage.getItem(LS_ANON) || '').trim();
+      let url = (localStorage.getItem(LS_URL) || '').trim();
+      let anon = (localStorage.getItem(LS_ANON) || '').trim();
+      if (!url) url = deployOrEmpty(DEPLOY_SUPABASE_URL);
+      if (!anon) anon = deployOrEmpty(DEPLOY_SUPABASE_ANON_KEY);
       if (!url || !anon) return null;
       supabaseClient = window.supabase.createClient(url, anon);
       return supabaseClient;

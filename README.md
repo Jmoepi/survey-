@@ -2,7 +2,7 @@
 
 This folder contains:
 
-- `CompliSA-Validation-Survey Final.html` — the survey (public link)
+- `index.html` — the survey served at `/` on Vercel or any static host
 - `dashboard.html` — an admin-only live dashboard (login required)
 - `supabase_schema.sql` — database schema + Row Level Security policies
 
@@ -15,14 +15,49 @@ This folder contains:
 3) Enable Realtime for the table (if needed):
 - In Supabase UI, go to **Database → Replication** and enable **Realtime** for `survey_responses`.
 
-## Configure the survey
+## Vercel + environment variables
 
-Open `CompliSA-Validation-Survey Final.html` and set:
+Vercel does not expose env vars to static HTML at **runtime**, so this project uses a **build step** that bakes the values into the files.
 
-- `SUPABASE_URL`
-- `SUPABASE_ANON_KEY`
+1. In Vercel: **Project → Settings → Environment Variables**, add (for **Production** and **Preview** as needed):
 
-These are in your Supabase project settings (API).
+   | Name | Value |
+   |------|--------|
+   | `NEXT_PUBLIC_SUPABASE_URL` | `https://YOUR_PROJECT.supabase.co` |
+   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase **anon** public key (API settings) |
+
+   The inject script also accepts `SUPABASE_URL` and `SUPABASE_ANON_KEY` if you prefer those names.
+
+2. Ensure Vercel runs a build: this repo includes **`package.json`** with `"build": "node scripts/inject-env.js"`. Vercel will run `npm run build` automatically.
+
+3. Redeploy after changing env vars.
+
+**Important:** Use only the **anon** key here (it is designed to be public with RLS). Never put the **service_role** key in env vars that get injected into HTML.
+
+**Variable names:** The build script only reads these names (copy exactly):
+
+- `NEXT_PUBLIC_SUPABASE_URL` **or** `SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` **or** `SUPABASE_ANON_KEY`
+
+If you used different names in Vercel (for example only `SUPABASE_ANON_KEY` without `NEXT_PUBLIC_`), either rename them to match **or** add duplicate entries with the names above pointing at the same values.
+
+After changing env vars, trigger a **new deployment** (Redeploy); static HTML does not pick up new env until build runs again.
+
+If you run `npm run build` **locally** without those variables set, placeholders become empty strings — restore the repo files with  
+`git checkout -- index.html dashboard.html` before committing.
+
+## Configure the survey (without Vercel)
+
+Open `index.html` and use **`'<meta name="complisa-supabase-…">'`** (see below), **or** rely on build injection above:
+
+```html
+<meta name="complisa-supabase-url" content="https://YOUR_PROJECT.supabase.co">
+<meta name="complisa-supabase-anon-key" content="YOUR_ANON_KEY">
+```
+
+Both values are under Supabase **Project Settings → API**.
+
+Each row inserts into `survey_responses` with **`payload`** (answers + **`answer_codes`**, **`_meta`**) plus top-level **`source`** (`web`) and **`survey_schema_version`** (default `2`). If your database was created from an older file without those columns, re-run `supabase_schema.sql` migrations or submissions fall back automatically to a minimal insert.
 
 ## Configure dashboard access (admin allowlist)
 
@@ -42,7 +77,7 @@ values ('00000000-0000-0000-0000-000000000000');
 
 Open `dashboard.html` in a browser:
 
-1) Paste `Supabase Project URL` + `anon key` (stored in your browser local storage)
+1) If you deployed with Vercel env injection, URL + anon key are prefilled from the build. Otherwise paste them manually (stored in your browser local storage when you click **Save config**).
 2) Log in
 3) You’ll see live updates as new survey responses arrive
 4) Export data via **Export CSV** or **Export Excel**

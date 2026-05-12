@@ -556,7 +556,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);line
   Survey responses are collected for internal research only and not shared with third parties.
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 let currentRole = null;
 let currentStep = 0;
@@ -609,13 +609,62 @@ function prevStep() {
 }
 
 /* ── SUPABASE CONFIG ────────────────────────────────────────────────────────
-   1) Create a Supabase project
-   2) Create the `survey_responses` table + RLS policies (see `supabase_schema.sql`)
-   3) Paste your Project URL and anon key below
+   1) Supabase project + run supabase_schema.sql
+   2) Vercel: set NEXT_PUBLIC_SUPABASE_URL + NEXT_PUBLIC_SUPABASE_ANON_KEY (see README)
+      npm run build replaces '__COMPLISA_TOKEN_*__' placeholders below.
+   3) Or add meta tags complisa-supabase-url / complisa-supabase-anon-key in head.
    ────────────────────────────────────────────────────────────────────────── */
-const SUPABASE_URL = 'PASTE_YOUR_SUPABASE_PROJECT_URL_HERE';
-const SUPABASE_ANON_KEY = 'PASTE_YOUR_SUPABASE_ANON_KEY_HERE';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const SUPABASE_URL_FALLBACK = '__COMPLISA_TOKEN_SUPABASE_URL__';
+const SUPABASE_ANON_KEY_FALLBACK = '__COMPLISA_TOKEN_SUPABASE_ANON_KEY__';
+
+function readMeta(name) {
+  const el = document.querySelector(`meta[name="${name}"]`);
+  return (el && el.getAttribute('content') || '').trim();
+}
+
+const SUPABASE_URL = readMeta('complisa-supabase-url') || SUPABASE_URL_FALLBACK;
+const SUPABASE_ANON_KEY = readMeta('complisa-supabase-anon-key') || SUPABASE_ANON_KEY_FALLBACK;
+const SURVEY_SCHEMA_VERSION = 2;
+
+function supabaseConfigLooksValid() {
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return false;
+  if (SUPABASE_URL.startsWith('PASTE')) return false;
+  if (SUPABASE_ANON_KEY.startsWith('PASTE')) return false;
+  if (SUPABASE_URL.indexOf('__COMPLISA_TOKEN_') !== -1) return false;
+  if (SUPABASE_ANON_KEY.indexOf('__COMPLISA_TOKEN_') !== -1) return false;
+  if (!/^https:\/\//i.test(SUPABASE_URL)) return false;
+  return true;
+}
+
+let supabaseClient = null;
+function getSupabaseClient() {
+  if (supabaseClient) return supabaseClient;
+  if (!supabaseConfigLooksValid()) return null;
+  const g = typeof globalThis !== 'undefined' ? globalThis.supabase : null;
+  const create =
+    (g && typeof g.createClient === 'function' && g.createClient) ||
+    (g && g.default && typeof g.default.createClient === 'function' && g.default.createClient);
+  if (!create) {
+    console.error('CompliSA survey: @supabase/supabase-js did not expose createClient.');
+    return null;
+  }
+  supabaseClient = create(SUPABASE_URL, SUPABASE_ANON_KEY);
+  return supabaseClient;
+}
+
+function getRadioValue(name) {
+  const checked = document.querySelector(`input[name="${name}"]:checked`);
+  return checked ? checked.value : '';
+}
+
+function pickCodes(names) {
+  const o = {};
+  names.forEach(function (n) {
+    const v = getRadioValue(n);
+    if (v) o[n] = v;
+  });
+  return o;
+}
 
 function getRadioLabel(name) {
   const checked = document.querySelector(`input[name="${name}"]:checked`);
@@ -625,13 +674,31 @@ function getRadioLabel(name) {
 }
 
 function collectData() {
-  if (currentRole === 'employer') {
+  var branch = currentRole === 'practitioner' ? 'practitioner' : 'employer';
+
+  function metaPayload() {
     return {
+      _meta: {
+        survey_schema_version: SURVEY_SCHEMA_VERSION,
+        branch: branch,
+        captured_at_client: new Date().toISOString()
+      }
+    };
+  }
+
+  if (currentRole === 'employer') {
+    var eRadioNames = [
+      'e_q1', 'e_q2', 'e_q3', 'e_q4', 'e_q5', 'e_q6', 'e_q7', 'e_q8',
+      'e_q9', 'e_q10', 'e_q11', 'e_q12', 'e_q13', 'e_q15'
+    ];
+    var roleChoice = getRadioValue('role');
+    return Object.assign({
       role: 'Employer',
       name:    document.getElementById('e-name').value.trim(),
       company: document.getElementById('e-company').value.trim(),
       email:   document.getElementById('e-email').value.trim(),
       phone:   document.getElementById('e-phone').value.trim(),
+      role_choice_code: roleChoice || undefined,
       e_q1:  getRadioLabel('e_q1'),
       e_q2:  getRadioLabel('e_q2'),
       e_q3:  getRadioLabel('e_q3'),
@@ -646,27 +713,38 @@ function collectData() {
       e_q12: getRadioLabel('e_q12'),
       e_q13: getRadioLabel('e_q13'),
       open:     document.getElementById('e_q14').value.trim(),
-      followup: getRadioLabel('e_q15')
-    };
-  } else {
-    return {
-      role: 'Practitioner',
-      name:    document.getElementById('p-name').value.trim(),
-      company: document.getElementById('p-firm').value.trim(),
-      email:   document.getElementById('p-email').value.trim(),
-      phone:   document.getElementById('p-phone').value.trim(),
-      p_q1:  getRadioLabel('p_q1'),
-      p_q2:  getRadioLabel('p_q2'),
-      p_q3:  getRadioLabel('p_q3'),
-      p_q4:  getRadioLabel('p_q4'),
-      p_q5:  getRadioLabel('p_q5'),
-      p_q6:  getRadioLabel('p_q6'),
-      p_q7:  getRadioLabel('p_q7'),
-      p_q8:  getRadioLabel('p_q8'),
-      open:     document.getElementById('p_q9').value.trim(),
-      followup: getRadioLabel('p_q10')
-    };
+      followup: getRadioLabel('e_q15'),
+      answer_codes: Object.assign(
+        { role: roleChoice },
+        pickCodes(eRadioNames)
+      )
+    }, metaPayload());
   }
+
+  var pRadioNames = ['p_q1', 'p_q2', 'p_q3', 'p_q4', 'p_q5', 'p_q6', 'p_q7', 'p_q8', 'p_q10'];
+  var prRoleChoice = getRadioValue('role');
+  return Object.assign({
+    role: 'Practitioner',
+    name:    document.getElementById('p-name').value.trim(),
+    company: document.getElementById('p-firm').value.trim(),
+    email:   document.getElementById('p-email').value.trim(),
+    phone:   document.getElementById('p-phone').value.trim(),
+    role_choice_code: prRoleChoice || undefined,
+    p_q1:  getRadioLabel('p_q1'),
+    p_q2:  getRadioLabel('p_q2'),
+    p_q3:  getRadioLabel('p_q3'),
+    p_q4:  getRadioLabel('p_q4'),
+    p_q5:  getRadioLabel('p_q5'),
+    p_q6:  getRadioLabel('p_q6'),
+    p_q7:  getRadioLabel('p_q7'),
+    p_q8:  getRadioLabel('p_q8'),
+    open:     document.getElementById('p_q9').value.trim(),
+    followup: getRadioLabel('p_q10'),
+    answer_codes: Object.assign(
+      { role: prRoleChoice },
+      pickCodes(pRadioNames)
+    )
+  }, metaPayload());
 }
 
 async function submitSurvey() {
@@ -674,26 +752,58 @@ async function submitSurvey() {
   if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
 
   try {
-    if (SUPABASE_URL.startsWith('PASTE') || SUPABASE_ANON_KEY.startsWith('PASTE')) {
+    const sb = getSupabaseClient();
+    if (!sb) {
       console.warn('CompliSA survey: Supabase not configured — logging response to console only.');
       console.table(collectData());
     } else {
       const payload = collectData();
-      const { error } = await supabase.from('survey_responses').insert({
+
+      var row = {
         role: payload.role || null,
         name: payload.name || null,
         company: payload.company || null,
         email: payload.email || null,
         phone: payload.phone || null,
-        payload,
-        user_agent: navigator.userAgent
-      });
-      if (error) throw error;
+        source: 'web',
+        survey_schema_version: SURVEY_SCHEMA_VERSION,
+        payload: payload,
+        user_agent: navigator.userAgent || null
+      };
+
+      var res = await sb.from('survey_responses').insert(row);
+
+      if (res.error) {
+        var msg = res.error.message || '';
+
+        if (
+          typeof msg === 'string' &&
+          (msg.indexOf('survey_schema_version') !== -1 ||
+            msg.indexOf('Could not find') !== -1 ||
+            msg.indexOf('schema cache') !== -1 ||
+            msg.indexOf('source') !== -1)
+        ) {
+          var minimal = Object.assign({}, row);
+          delete minimal.source;
+          delete minimal.survey_schema_version;
+          res = await sb.from('survey_responses').insert(minimal);
+        }
+
+        if (res.error) throw res.error;
+      }
     }
   } catch (err) {
     console.error('Submission error:', err);
     if (btn) { btn.disabled = false; btn.textContent = 'Submit responses ✓'; }
-    alert('Sorry — there was an error submitting your response. Please try again.');
+    var detail = '';
+    try {
+      if (err && err.message) detail = String(err.message);
+    } catch (e2) {}
+
+    alert(
+      'Sorry — there was an error submitting your response. Please try again.' +
+      (detail ? '\n\n' + detail : '')
+    );
     return;
   }
 

@@ -5,19 +5,46 @@ create table if not exists public.survey_responses (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
 
-  -- high-level fields for filtering
+  -- high-level fields for filtering / exports (mirrors payload where applicable)
   role text,
   name text,
   company text,
   email text,
   phone text,
 
-  -- full response payload (includes all question answers)
+  -- provenance / schema evolution for `payload` shape
+  source text not null default 'web',
+  survey_schema_version integer not null default 2,
+
+  -- full response payload (includes answers, labels, `answer_codes`, `_meta`)
   payload jsonb not null,
 
   -- lightweight metadata (no IP captured from browser)
   user_agent text
 );
+
+-- Migrate older databases created before these columns existed
+alter table public.survey_responses
+  add column if not exists source text not null default 'web';
+
+alter table public.survey_responses
+  add column if not exists survey_schema_version integer not null default 2;
+
+alter table public.survey_responses
+  drop constraint if exists survey_responses_role_check;
+
+alter table public.survey_responses
+  add constraint survey_responses_role_check
+    check (
+      role is null
+      or role in ('Employer', 'Practitioner')
+    );
+
+create index if not exists survey_responses_created_at_desc_idx
+  on public.survey_responses (created_at desc);
+
+create index if not exists survey_responses_role_created_at_idx
+  on public.survey_responses (role, created_at desc);
 
 alter table public.survey_responses enable row level security;
 
@@ -68,7 +95,18 @@ using (exists (
   where a.user_id = auth.uid()
 ));
 
--- Realtime (for live dashboard updates)
--- In Supabase you may also need to enable Realtime on this table in the UI.
-alter publication supabase_realtime add table public.survey_responses;
+-- Realtime (for live dashboard updates).
+-- Safe to run more than once. You can also enable Realtime for this table in the Supabase UI.
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'survey_responses'
+  ) then
+    execute 'alter publication supabase_realtime add table public.survey_responses';
+  end if;
+end $$;
 
