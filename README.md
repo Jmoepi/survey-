@@ -28,9 +28,11 @@ Vercel does not expose env vars to static HTML at **runtime**, so this project u
 
    The inject script also accepts `SUPABASE_URL` and `SUPABASE_ANON_KEY` if you prefer those names.
 
-2. Ensure Vercel runs a build: this repo includes **`package.json`** with `"build": "node scripts/inject-env.js"`. Vercel will run `npm run build` automatically.
+2. Ensure Vercel runs a build: **`vercel.json`** sets **`outputDirectory`** to **`public`**. The script **`scripts/inject-env.js`** copies **`index.html`** and **`dashboard.html`** from the repo root into **`public/`** with env vars injected (root files stay as templates with placeholders).
 
-3. Redeploy after changing env vars.
+3. If your Vercel project still has a **wrong Output Directory** in the dashboard UI, either clear it or set it to **`public`** so it matches **`vercel.json`**.
+
+4. Redeploy after changing env vars.
 
 **Important:** Use only the **anon** key here (it is designed to be public with RLS). Never put the **service_role** key in env vars that get injected into HTML.
 
@@ -43,8 +45,7 @@ If you used different names in Vercel (for example only `SUPABASE_ANON_KEY` with
 
 After changing env vars, trigger a **new deployment** (Redeploy); static HTML does not pick up new env until build runs again.
 
-If you run `npm run build` **locally** without those variables set, placeholders become empty strings — restore the repo files with  
-`git checkout -- index.html dashboard.html` before committing.
+If you run **`npm run vercel-build`** locally without env vars set, **`public/`** will contain HTML with empty credentials — delete **`public/`** or rerun with env set. Root **`index.html`** / **`dashboard.html`** are no longer overwritten by the inject script.
 
 ## Configure the survey (without Vercel)
 

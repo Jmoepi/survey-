@@ -147,8 +147,8 @@
     const LS_ANON = 'complisa_sb_anon';
 
     /* Replaced at deploy by scripts/inject-env.js when Vercel env vars are set */
-    const DEPLOY_SUPABASE_URL = '__COMPLISA_TOKEN_SUPABASE_URL__';
-    const DEPLOY_SUPABASE_ANON_KEY = '__COMPLISA_TOKEN_SUPABASE_ANON_KEY__';
+    const DEPLOY_SUPABASE_URL = "";
+    const DEPLOY_SUPABASE_ANON_KEY = "";
 
     function deployOrEmpty(v) {
       if (!v || String(v).indexOf('__COMPLISA_TOKEN_') !== -1) return '';

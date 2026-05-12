@@ -1,5 +1,7 @@
 /**
- * Build-time injection for Vercel (and local): replaces placeholders in HTML with env vars.
+ * Build-time injection for Vercel (and local): reads template HTML from repo root,
+ * replaces placeholders, writes to public/ (Vercel output directory).
+ *
  * Reads: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY
  *        or SUPABASE_URL, SUPABASE_ANON_KEY
  */
@@ -7,6 +9,7 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.join(__dirname, '..');
+const outDir = path.join(root, 'public');
 const files = ['index.html', 'dashboard.html'];
 
 const url =
@@ -24,11 +27,13 @@ function inject(content) {
     .replace(/'__COMPLISA_TOKEN_SUPABASE_ANON_KEY__'/g, JSON.stringify(anon));
 }
 
+fs.mkdirSync(outDir, { recursive: true });
+
 for (const name of files) {
-  const fp = path.join(root, name);
-  if (!fs.existsSync(fp)) continue;
-  const raw = fs.readFileSync(fp, 'utf8');
-  fs.writeFileSync(fp, inject(raw), 'utf8');
+  const src = path.join(root, name);
+  if (!fs.existsSync(src)) continue;
+  const raw = fs.readFileSync(src, 'utf8');
+  fs.writeFileSync(path.join(outDir, name), inject(raw), 'utf8');
 }
 
 if (!url || !anon) {
@@ -36,5 +41,5 @@ if (!url || !anon) {
     'inject-env: NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY not both set — placeholders left empty strings.'
   );
 } else {
-  console.log('inject-env: injected Supabase URL + anon key into', files.join(', '));
+  console.log('inject-env: wrote Supabase-injected', files.join(', '), 'to public/');
 }
