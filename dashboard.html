@@ -174,12 +174,40 @@
     .contact-lines strong{font-size:14px;color:var(--ink);display:block;margin-bottom:2px}
     .muted{color:var(--ink-3)}
     .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono','Courier New',monospace;font-size:12px;color:var(--ink-2)}
-    details.answers{border:1px solid var(--line-soft);border-radius:14px;padding:9px 10px;background:#fff;max-width:620px}
-    details.answers summary{cursor:pointer;font-weight:800;color:var(--teal);font-size:13px;list-style:none}
-    details.answers summary::-webkit-details-marker{display:none}
-    .kv{margin-top:12px;display:grid;grid-template-columns:190px 1fr;gap:7px 12px}
-    .kv .k{font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:900}
-    .kv .v{font-size:13px;color:var(--ink);white-space:pre-wrap;word-break:break-word}
+    .answers-btn{white-space:nowrap}
+    .modal-backdrop{
+      position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:18px;
+      background:rgba(5,22,17,.58);backdrop-filter:blur(10px);
+    }
+    .modal-backdrop.show{display:flex}
+    .modal-card{
+      width:min(980px,100%);max-height:min(88vh,860px);overflow:hidden;
+      background:var(--paper);border:1px solid rgba(216,214,207,.95);border-radius:28px;box-shadow:0 34px 110px rgba(0,0,0,.28);
+      display:flex;flex-direction:column;animation:modalIn .18s ease-out;
+    }
+    @keyframes modalIn{from{transform:translateY(10px) scale(.985);opacity:.65}to{transform:translateY(0) scale(1);opacity:1}}
+    .modal-head{
+      padding:20px 22px;border-bottom:1px solid var(--line-soft);
+      display:flex;align-items:flex-start;justify-content:space-between;gap:14px;background:linear-gradient(180deg,#fff,var(--mint));
+    }
+    .modal-head h3{font-family:'DM Serif Display',serif;font-weight:400;font-size:28px;line-height:1.05}
+    .modal-head p{font-size:13px;color:var(--ink-3);margin-top:6px}
+    .modal-body{padding:20px 22px;overflow:auto}
+    .modal-actions{display:flex;gap:10px;align-items:center;justify-content:flex-end;padding:14px 22px;border-top:1px solid var(--line-soft);background:#fff}
+    .answer-section{margin-bottom:18px}
+    .answer-section:last-child{margin-bottom:0}
+    .answer-section-title{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      font-size:12px;color:var(--teal);text-transform:uppercase;letter-spacing:.12em;font-weight:900;margin-bottom:10px;
+    }
+    .answer-grid{display:grid;grid-template-columns:220px minmax(0,1fr);gap:8px 14px}
+    .answer-grid .k{font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:900;padding-top:2px}
+    .answer-grid .v{font-size:14px;color:var(--ink);white-space:pre-wrap;word-break:break-word;background:#fff;border:1px solid var(--line-soft);border-radius:12px;padding:9px 10px;min-height:38px}
+    .answer-grid .v.empty-value{color:var(--ink-3);background:#FAFAF8}
+    .modal-json{
+      white-space:pre-wrap;word-break:break-word;background:#101813;color:#F4FFF8;border-radius:16px;padding:14px;
+      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono','Courier New',monospace;font-size:12px;line-height:1.55;
+    }
     .empty{padding:42px 18px;text-align:center;color:var(--ink-3)}
     .empty strong{display:block;color:var(--ink);font-size:18px;margin-bottom:6px}
 
@@ -201,6 +229,12 @@
       .status-pill{width:100%;justify-content:center}
       .btn{width:100%}
       .actions-row .btn{width:auto;flex:1}
+      .modal-card{border-radius:20px;max-height:92vh}
+      .modal-head,.modal-body,.modal-actions{padding-left:16px;padding-right:16px}
+      .modal-head{flex-direction:column}
+      .modal-actions{flex-direction:column}
+      .modal-actions .btn{width:100%}
+      .answer-grid{grid-template-columns:1fr}
     }
   </style>
 </head>
@@ -396,6 +430,23 @@
     </main>
   </div>
 
+  <div class="modal-backdrop" id="answersModal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="answersModalTitle">
+      <div class="modal-head">
+        <div>
+          <h3 id="answersModalTitle">Survey response</h3>
+          <p id="answersModalSubtitle">Full response details</p>
+        </div>
+        <button class="btn small" id="answersModalCloseTop" aria-label="Close answers modal">Close</button>
+      </div>
+      <div class="modal-body" id="answersModalBody"></div>
+      <div class="modal-actions">
+        <button class="btn" id="copyPayloadBtn">Copy payload JSON</button>
+        <button class="btn primary" id="answersModalCloseBottom">Done</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
@@ -433,6 +484,8 @@
       insightContactRate: document.getElementById('insightContactRate'), insightTopProvince: document.getElementById('insightTopProvince'), insightAutomation: document.getElementById('insightAutomation'), insightRecent: document.getElementById('insightRecent'),
       searchInput: document.getElementById('searchInput'), roleFilter: document.getElementById('roleFilter'), dateFrom: document.getElementById('dateFrom'), dateTo: document.getElementById('dateTo'), applyFiltersBtn: document.getElementById('applyFiltersBtn'), resetFiltersBtn: document.getElementById('resetFiltersBtn'),
       tbody: document.getElementById('tbody'), tableMeta: document.getElementById('tableMeta'),
+      answersModal: document.getElementById('answersModal'), answersModalTitle: document.getElementById('answersModalTitle'), answersModalSubtitle: document.getElementById('answersModalSubtitle'), answersModalBody: document.getElementById('answersModalBody'),
+      answersModalCloseTop: document.getElementById('answersModalCloseTop'), answersModalCloseBottom: document.getElementById('answersModalCloseBottom'), copyPayloadBtn: document.getElementById('copyPayloadBtn'),
       exportCsvBtn: document.getElementById('exportCsvBtn'), exportXlsxBtn: document.getElementById('exportXlsxBtn'), refreshBtn: document.getElementById('refreshBtn')
     };
 
@@ -442,6 +495,7 @@
     let filteredRows = [];
     let totalAvailableCount = 0;
     let charts = {};
+    let activeModalRow = null;
 
     function deployOrEmpty(value) {
       if (!value || String(value).includes('__COMPLISA_TOKEN_')) return '';
@@ -757,24 +811,97 @@
     }
 
     function answersDetails(row) {
-      const p = row.payload || {};
-      const keys = Array.from(new Set([...ANSWER_ORDER, ...Object.keys(p)]));
-      const rows = keys.map(key => {
-        const value = p[key] ?? (['role','name','company','email','phone'].includes(key) ? row[key] : undefined);
+      return `<button type="button" class="btn small answers-btn" data-answer-id="${escapeHtml(row.id || '')}">View all answers</button>`;
+    }
+
+    function answerGrid(items) {
+      return `<div class="answer-grid">${items.map(([label, value]) => {
         const clean = toSafeText(value);
         return `
-          <div class="k">${escapeHtml(ANSWER_LABELS[key] || key)}</div>
-          <div class="v">${clean ? escapeHtml(clean) : '<span class="muted">-</span>'}</div>
+          <div class="k">${escapeHtml(label)}</div>
+          <div class="v${clean ? '' : ' empty-value'}">${clean ? escapeHtml(clean) : 'Not answered'}</div>
         `;
-      }).join('');
+      }).join('')}</div>`;
+    }
 
-      const metadata = `
-        <div class="k">Source</div><div class="v">${escapeHtml(row.source || 'web')}</div>
-        <div class="k">Schema version</div><div class="v">${escapeHtml(row.survey_schema_version || '')}</div>
-        <div class="k">User agent</div><div class="v">${escapeHtml(row.user_agent || '')}</div>
+    function buildAnswersModalBody(row) {
+      const p = row.payload || {};
+      const keys = Array.from(new Set([...ANSWER_ORDER, ...Object.keys(p)]));
+
+      const contactItems = [
+        ['Created', formatDateTime(row.created_at)],
+        ['Role', row.role],
+        ['Name', row.name],
+        ['Company/Firm', row.company],
+        ['Email', row.email],
+        ['Phone', row.phone]
+      ];
+
+      const answerItems = keys
+        .filter(key => !['role','name','company','email','phone'].includes(key))
+        .map(key => [ANSWER_LABELS[key] || key, p[key]]);
+
+      const metadataItems = [
+        ['Response ID', row.id],
+        ['Source', row.source || 'web'],
+        ['Schema version', row.survey_schema_version || ''],
+        ['User agent', row.user_agent || '']
+      ];
+
+      const prettyPayload = JSON.stringify(p, null, 2);
+
+      return `
+        <div class="answer-section">
+          <div class="answer-section-title">Contact and response summary</div>
+          ${answerGrid(contactItems)}
+        </div>
+        <div class="answer-section">
+          <div class="answer-section-title">Survey answers <span>${answerItems.length} fields</span></div>
+          ${answerGrid(answerItems)}
+        </div>
+        <div class="answer-section">
+          <div class="answer-section-title">Technical metadata</div>
+          ${answerGrid(metadataItems)}
+        </div>
+        <div class="answer-section">
+          <div class="answer-section-title">Raw payload JSON</div>
+          <pre class="modal-json">${escapeHtml(prettyPayload)}</pre>
+        </div>
       `;
+    }
 
-      return `<details class="answers"><summary>View all answers</summary><div class="kv">${rows}${metadata}</div></details>`;
+    function openAnswersModal(rowId) {
+      const row = filteredRows.find(item => String(item.id) === String(rowId)) || rowsCache.find(item => String(item.id) === String(rowId));
+      if (!row) return;
+      activeModalRow = row;
+      const titleName = row.name || row.company || `${row.role || 'Survey'} response`;
+      els.answersModalTitle.textContent = titleName;
+      els.answersModalSubtitle.textContent = `${row.role || 'Response'} • ${formatDateTime(row.created_at)}`;
+      els.answersModalBody.innerHTML = buildAnswersModalBody(row);
+      els.answersModal.classList.add('show');
+      els.answersModal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      els.answersModalCloseTop.focus();
+    }
+
+    function closeAnswersModal() {
+      activeModalRow = null;
+      els.answersModal.classList.remove('show');
+      els.answersModal.setAttribute('aria-hidden', 'true');
+      els.answersModalBody.innerHTML = '';
+      document.body.style.overflow = '';
+    }
+
+    async function copyActivePayload() {
+      if (!activeModalRow) return;
+      const text = JSON.stringify(activeModalRow.payload || {}, null, 2);
+      try {
+        await navigator.clipboard.writeText(text);
+        els.copyPayloadBtn.textContent = 'Copied';
+        setTimeout(() => { els.copyPayloadBtn.textContent = 'Copy payload JSON'; }, 1200);
+      } catch (error) {
+        showError(els.dashboardError, 'Could not copy JSON. Your browser may require HTTPS or clipboard permission.');
+      }
     }
 
     function createOrUpdateChart(key, canvasId, config) {
@@ -986,6 +1113,21 @@
     els.roleFilter.addEventListener('change', applyFilters);
     els.dateFrom.addEventListener('change', applyFilters);
     els.dateTo.addEventListener('change', applyFilters);
+
+    els.tbody.addEventListener('click', event => {
+      const button = event.target.closest('[data-answer-id]');
+      if (!button) return;
+      openAnswersModal(button.dataset.answerId);
+    });
+    els.answersModalCloseTop.addEventListener('click', closeAnswersModal);
+    els.answersModalCloseBottom.addEventListener('click', closeAnswersModal);
+    els.copyPayloadBtn.addEventListener('click', copyActivePayload);
+    els.answersModal.addEventListener('click', event => {
+      if (event.target === els.answersModal) closeAnswersModal();
+    });
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && els.answersModal.classList.contains('show')) closeAnswersModal();
+    });
 
     bootstrap().catch(error => {
       console.error(error);
