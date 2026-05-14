@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CompliSA — UIF Compliance Validation Survey</title>
+<title>Fintegris — UIF Compliance Validation Survey</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -96,7 +96,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);line
 .field-wrap .opt-note{font-size:11px;color:var(--ink3);margin-top:2px}
 .site-footer{text-align:center;padding:32px;color:var(--ink3);font-size:12px;border-top:1px solid var(--rule);margin-top:40px}
 .site-footer strong{color:var(--ink2)}
-@media(max-width:600px){.role-grid{grid-template-columns:1fr}.contact-grid{grid-template-columns:1fr}.survey-wrap{padding:24px 16px 60px}}
+.toast-container{position:fixed;top:20px;right:20px;z-index:9999;pointer-events:none}
+.toast{background:#B92B2B;color:white;padding:14px 20px;border-radius:8px;margin-bottom:10px;box-shadow:0 4px 12px rgba(185,43,43,0.3);font-size:14px;animation:slideIn 0.3s ease;pointer-events:auto;max-width:300px}
+@keyframes slideIn{from{transform:translateX(400px);opacity:0}to{transform:translateX(0);opacity:1}}
+@media(max-width:600px){.role-grid{grid-template-columns:1fr}.contact-grid{grid-template-columns:1fr}.survey-wrap{padding:24px 16px 60px}.toast{right:10px;left:10px;max-width:none}}
 @media print{.site-header,.nav-row,.site-footer{display:none}.step{display:block!important}.q-card{break-inside:avoid;margin-bottom:12px}}
 </style>
 </head>
@@ -108,8 +111,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);line
       <svg width="20" height="20" viewBox="0 0 20 20"><path d="M10 2C5.58 2 2 5.58 2 10s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zm-1 11.5l-3.5-3.5 1.41-1.41L9 10.67l4.59-4.58L15 7.5l-6 6z"/></svg>
     </div>
     <div>
-      <div class="logo-text">CompliSA</div>
-      <div class="logo-sub">Submission Automation · A Didusec product</div>
+      <div class="logo-text">Fintegris</div>
+      <div class="logo-sub">UIF Compliance Platform · A Didusec product</div>
     </div>
   </div>
   <div class="header-tag">Market Validation Survey</div>
@@ -119,7 +122,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);line
 
   <div class="intro-card">
     <h1>UIF Compliance — Understanding the Gap</h1>
-    <p>Didusec is developing <strong>CompliSA</strong>, a platform to automate monthly UIF employer declarations for South African SMMEs. This brief survey helps us understand current compliance challenges and whether this solution addresses a real need.</p>
+    <p>Didusec is developing <strong>Fintegris</strong>, a platform to automate monthly UIF employer declarations for South African SMMEs. This brief survey helps us understand current compliance challenges and whether this solution addresses a real need.</p>
     <p>All responses are confidential and used only to inform product development.</p>
     <span class="time-note">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -299,17 +302,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);line
       </div>
     </div>
 
-    <div class="q-card">
-      <div class="q-num">Q10</div>
-      <div class="q-text">Are you aware of a proposed amendment to the UI Act that could require a UIF compliance certificate for companies doing business with government?</div>
-      <div class="q-note warning">⚠ Important: This amendment is NOT currently in force. It has been identified as a potential future requirement in the UIF Annual Report 2024/25.</div>
-      <div class="options">
-        <label class="opt-label"><input type="radio" name="e_q10" value="aware"><div class="radio-dot"></div><span>Yes — I was aware of this proposal</span></label>
-        <label class="opt-label"><input type="radio" name="e_q10" value="not_aware"><div class="radio-dot"></div><span>No — this is news to me</span></label>
-        <label class="opt-label"><input type="radio" name="e_q10" value="no_govt"><div class="radio-dot"></div><span>I don't do business with government, so not relevant to me</span></label>
-      </div>
-    </div>
-
     <div class="nav-row">
       <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
       <button class="btn btn-primary" onclick="nextStep()">Continue →</button>
@@ -319,7 +311,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);line
   <!-- EMPLOYER: Step 4 — Value proposition -->
   <div class="step" id="step-E4">
     <div class="step-label">Section D · Value &amp; willingness to pay</div>
-    <div class="step-title">Would CompliSA solve a problem for you?</div>
+    <div class="step-title">Would Fintegris solve a problem for you?</div>
 
     <div class="q-card">
       <div class="q-num">Q11</div>
@@ -335,7 +327,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);line
 
     <div class="q-card">
       <div class="q-num">Q12</div>
-      <div class="q-text">If CompliSA automatically submitted your monthly UIF declarations — handling everything by the 7th of the month, sending you DOL confirmation, and reconciling your SARS vs DOL records — how valuable would this be?</div>
+      <div class="q-text">If Fintegris automatically submitted your monthly UIF declarations — handling everything by the 7th of the month, sending you DOL confirmation, and reconciling your SARS vs DOL records — how valuable would this be?</div>
       <div class="options">
         <label class="opt-label"><input type="radio" name="e_q12" value="extremely"><div class="radio-dot"></div><span>Extremely valuable — this is exactly what I need</span></label>
         <label class="opt-label"><input type="radio" name="e_q12" value="very"><div class="radio-dot"></div><span>Very valuable</span></label>
@@ -350,9 +342,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);line
       <div class="q-text">What would you be willing to pay per month for full UIF declaration automation?</div>
       <div class="options">
         <label class="opt-label"><input type="radio" name="e_q13" value="nothing"><div class="radio-dot"></div><span>Nothing — I would do it myself</span></label>
-        <label class="opt-label"><input type="radio" name="e_q13" value="under_200"><div class="radio-dot"></div><span>Up to R199/month</span></label>
-        <label class="opt-label"><input type="radio" name="e_q13" value="200_500"><div class="radio-dot"></div><span>R200–R499/month</span></label>
-        <label class="opt-label"><input type="radio" name="e_q13" value="500_1000"><div class="radio-dot"></div><span>R500–R999/month</span></label>
+        <label class="opt-label"><input type="radio" name="e_q13" value="under_299"><div class="radio-dot"></div><span>Up to R299/month</span></label>
+        <label class="opt-label"><input type="radio" name="e_q13" value="300_499"><div class="radio-dot"></div><span>R300 – R499/month</span></label>
+        <label class="opt-label"><input type="radio" name="e_q13" value="500_699"><div class="radio-dot"></div><span>R500 – R699/month</span></label>
+        <label class="opt-label"><input type="radio" name="e_q13" value="700_999"><div class="radio-dot"></div><span>R700 – R999/month</span></label>
         <label class="opt-label"><input type="radio" name="e_q13" value="over_1000"><div class="radio-dot"></div><span>More than R1,000/month</span></label>
       </div>
     </div>
@@ -367,7 +360,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);line
 
     <div class="q-card">
       <div class="q-num">Q15</div>
-      <div class="q-text">Would you be open to a brief follow-up conversation with the CompliSA team?</div>
+      <div class="q-text">Would you be open to a brief follow-up conversation with the Fintegris team?</div>
       <div class="options">
         <label class="opt-label"><input type="radio" name="e_q15" value="yes"><div class="radio-dot"></div><span>Yes — happy to chat</span></label>
         <label class="opt-label"><input type="radio" name="e_q15" value="maybe"><div class="radio-dot"></div><span>Maybe — depends on timing</span></label>
@@ -474,7 +467,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);line
   <!-- PRACTITIONER: Step 3 — Value proposition -->
   <div class="step" id="step-P3">
     <div class="step-label">Section C · Value &amp; willingness to pay</div>
-    <div class="step-title">Would CompliSA help your practice?</div>
+    <div class="step-title">Would Fintegris help your practice?</div>
 
     <div class="q-card">
       <div class="q-num">P6</div>
@@ -521,7 +514,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);line
 
     <div class="q-card">
       <div class="q-num">P10</div>
-      <div class="q-text">Would you be open to a brief follow-up conversation with the CompliSA team?</div>
+      <div class="q-text">Would you be open to a brief follow-up conversation with the Fintegris team?</div>
       <div class="options">
         <label class="opt-label"><input type="radio" name="p_q10" value="yes"><div class="radio-dot"></div><span>Yes — happy to chat</span></label>
         <label class="opt-label"><input type="radio" name="p_q10" value="maybe"><div class="radio-dot"></div><span>Maybe — depends on timing</span></label>
@@ -551,8 +544,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);line
 
 </main>
 
+<div class="toast-container" id="toastContainer"></div>
+
 <footer class="site-footer">
-  <strong>CompliSA</strong> is a product of <strong>Didusec (Pty) Ltd</strong> · <a href="https://didusec.co.za" style="color:var(--teal)">didusec.co.za</a><br>
+  <strong>Fintegris</strong> is a product of <strong>Didusec (Pty) Ltd</strong> · <a href="https://didusec.co.za" style="color:var(--teal)">didusec.co.za</a><br>
   Survey responses are collected for internal research only and not shared with third parties.
 </footer>
 
@@ -590,12 +585,55 @@ function showStep(n) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function nextStep() {
-  if (currentStep === 0) {
-    if (!currentRole) {
-      document.getElementById('err-role').classList.add('show');
-      return;
+function showToast(message) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = message;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.animation = 'slideIn 0.3s ease reverse';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+function validateCurrentStep() {
+  const steps = getSteps();
+  const currentStepId = steps[currentStep];
+  const stepEl = document.getElementById(currentStepId);
+  if (!stepEl) return true;
+
+  const requiredFields = {
+    'step-0': ['role'],
+    'step-E1': ['e_q1', 'e_q2', 'e_q3'],
+    'step-E2': ['e_q4', 'e_q5', 'e_q6', 'e_q7'],
+    'step-E3': ['e_q8', 'e_q9'],
+    'step-E4': ['e_q11', 'e_q12', 'e_q13', 'e_q15'],
+    'step-P1': ['p_q1', 'p_q2'],
+    'step-P2': ['p_q3', 'p_q4', 'p_q5'],
+    'step-P3': ['p_q6', 'p_q7', 'p_q8', 'p_q10']
+  };
+
+  const fieldsToCheck = requiredFields[currentStepId] || [];
+  const unanswered = [];
+
+  for (const field of fieldsToCheck) {
+    const checked = document.querySelector(`input[name="${field}"]:checked`);
+    if (!checked) {
+      unanswered.push(field);
     }
+  }
+
+  if (unanswered.length > 0) {
+    showToast(`Please answer all questions before continuing (${unanswered.length} unanswered).`);
+    return false;
+  }
+  return true;
+}
+
+function nextStep() {
+  if (!validateCurrentStep()) {
+    return;
   }
   currentStep++;
   showStep(currentStep);
@@ -611,27 +649,27 @@ function prevStep() {
 /* ── SUPABASE CONFIG ────────────────────────────────────────────────────────
    1) Supabase project + run supabase_schema.sql
    2) Vercel: set NEXT_PUBLIC_SUPABASE_URL + NEXT_PUBLIC_SUPABASE_ANON_KEY (see README)
-      npm run build replaces '__COMPLISA_TOKEN_*__' placeholders below.
-   3) Or add meta tags complisa-supabase-url / complisa-supabase-anon-key in head.
+      npm run build replaces '__FINTEGRIS_TOKEN_*__' placeholders below.
+   3) Or add meta tags fintegris-supabase-url / fintegris-supabase-anon-key in head.
    ────────────────────────────────────────────────────────────────────────── */
-const SUPABASE_URL_FALLBACK = '__COMPLISA_TOKEN_SUPABASE_URL__';
-const SUPABASE_ANON_KEY_FALLBACK = '__COMPLISA_TOKEN_SUPABASE_ANON_KEY__';
+const SUPABASE_URL_FALLBACK = '__FINTEGRIS_TOKEN_SUPABASE_URL__';
+const SUPABASE_ANON_KEY_FALLBACK = '__FINTEGRIS_TOKEN_SUPABASE_ANON_KEY__';
 
 function readMeta(name) {
   const el = document.querySelector(`meta[name="${name}"]`);
   return (el && el.getAttribute('content') || '').trim();
 }
 
-const SUPABASE_URL = readMeta('complisa-supabase-url') || SUPABASE_URL_FALLBACK;
-const SUPABASE_ANON_KEY = readMeta('complisa-supabase-anon-key') || SUPABASE_ANON_KEY_FALLBACK;
+const SUPABASE_URL = readMeta('fintegris-supabase-url') || SUPABASE_URL_FALLBACK;
+const SUPABASE_ANON_KEY = readMeta('fintegris-supabase-anon-key') || SUPABASE_ANON_KEY_FALLBACK;
 const SURVEY_SCHEMA_VERSION = 2;
 
 function supabaseConfigLooksValid() {
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return false;
   if (SUPABASE_URL.startsWith('PASTE')) return false;
   if (SUPABASE_ANON_KEY.startsWith('PASTE')) return false;
-  if (SUPABASE_URL.indexOf('__COMPLISA_TOKEN_') !== -1) return false;
-  if (SUPABASE_ANON_KEY.indexOf('__COMPLISA_TOKEN_') !== -1) return false;
+  if (SUPABASE_URL.indexOf('__FINTEGRIS_TOKEN_') !== -1) return false;
+  if (SUPABASE_ANON_KEY.indexOf('__FINTEGRIS_TOKEN_') !== -1) return false;
   if (!/^https:\/\//i.test(SUPABASE_URL)) return false;
   return true;
 }
@@ -645,11 +683,16 @@ function getSupabaseClient() {
     (g && typeof g.createClient === 'function' && g.createClient) ||
     (g && g.default && typeof g.default.createClient === 'function' && g.default.createClient);
   if (!create) {
-    console.error('CompliSA survey: @supabase/supabase-js did not expose createClient.');
+    console.error('Fintegris survey: @supabase/supabase-js did not expose createClient.');
     return null;
   }
   supabaseClient = create(SUPABASE_URL, SUPABASE_ANON_KEY);
   return supabaseClient;
+}
+
+function getRadioValue(name) {
+  const checked = document.querySelector(`input[name="${name}"]:checked`);
+  return checked ? checked.value : '';
 }
 
 function getRadioValue(name) {
@@ -689,7 +732,7 @@ function collectData() {
   if (currentRole === 'employer') {
     var eRadioNames = [
       'e_q1', 'e_q2', 'e_q3', 'e_q4', 'e_q5', 'e_q6', 'e_q7', 'e_q8',
-      'e_q9', 'e_q10', 'e_q11', 'e_q12', 'e_q13', 'e_q15'
+      'e_q9', 'e_q11', 'e_q12', 'e_q13', 'e_q15'
     ];
     var roleChoice = getRadioValue('role');
     return Object.assign({
@@ -708,7 +751,6 @@ function collectData() {
       e_q7:  getRadioLabel('e_q7'),
       e_q8:  getRadioLabel('e_q8'),
       e_q9:  getRadioLabel('e_q9'),
-      e_q10: getRadioLabel('e_q10'),
       e_q11: getRadioLabel('e_q11'),
       e_q12: getRadioLabel('e_q12'),
       e_q13: getRadioLabel('e_q13'),
@@ -748,6 +790,9 @@ function collectData() {
 }
 
 async function submitSurvey() {
+  if (!validateCurrentStep()) {
+    return;
+  }
   const btn = document.querySelector('.step.active .btn-primary');
   if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
 
@@ -760,7 +805,7 @@ async function submitSurvey() {
         'If you deploy on Vercel, set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY and redeploy.\n' +
         'Open the browser developer console (F12) for details.'
       );
-      console.warn('CompliSA survey: Supabase not configured — response was NOT saved.');
+      console.warn('Fintegris survey: Supabase not configured — response was NOT saved.');
       console.table(collectData());
       return;
     }

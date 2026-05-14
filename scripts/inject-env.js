@@ -23,8 +23,8 @@ const anon =
 
 function inject(content) {
   return content
-    .replace(/'__COMPLISA_TOKEN_SUPABASE_URL__'/g, JSON.stringify(url))
-    .replace(/'__COMPLISA_TOKEN_SUPABASE_ANON_KEY__'/g, JSON.stringify(anon));
+    .replace(/'__FINTEGRIS_TOKEN_SUPABASE_URL__'/g, JSON.stringify(url))
+    .replace(/'__FINTEGRIS_TOKEN_SUPABASE_ANON_KEY__'/g, JSON.stringify(anon));
 }
 
 fs.mkdirSync(outDir, { recursive: true });
