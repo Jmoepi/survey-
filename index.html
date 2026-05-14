@@ -1,893 +1,1610 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fintegris — UIF Compliance Validation Survey</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
-<style>
-:root {
-  --teal:        #0B5E47;
-  --teal-mid:    #1D9E75;
-  --teal-light:  #E1F5EE;
-  --teal-border: #9FE1CB;
-  --ink:         #1A1A18;
-  --ink2:        #3D3D3A;
-  --ink3:        #6B6B67;
-  --rule:        #D8D6CF;
-  --bg:          #FAFAF8;
-  --white:       #FFFFFF;
-  --amber:       #B8710F;
-  --amber-light: #FDF0DC;
-  --red:         #B92B2B;
-  --red-light:   #FBEAEA;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;min-height:100vh}
-.site-header{background:var(--teal);padding:18px 32px;display:flex;align-items:center;justify-content:space-between}
-.logo{display:flex;align-items:center;gap:12px}
-.logo-mark{width:36px;height:36px;background:rgba(255,255,255,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center}
-.logo-mark svg{fill:white}
-.logo-text{color:white;font-size:18px;font-weight:500}
-.logo-sub{color:rgba(255,255,255,0.65);font-size:12px;margin-top:1px}
-.header-tag{background:rgba(255,255,255,0.15);color:white;font-size:11px;padding:4px 10px;border-radius:20px}
-.survey-wrap{max-width:680px;margin:0 auto;padding:40px 24px 80px}
-.intro-card{background:white;border:1px solid var(--rule);border-radius:12px;padding:28px 32px;margin-bottom:32px}
-.intro-card h1{font-family:'DM Serif Display',serif;font-size:24px;font-weight:400;color:var(--ink);margin-bottom:10px}
-.intro-card p{color:var(--ink3);font-size:14px;line-height:1.7;margin-bottom:8px}
-.intro-card p:last-child{margin-bottom:0}
-.intro-card .time-note{display:inline-flex;align-items:center;gap:6px;font-size:12px;background:var(--teal-light);color:var(--teal);padding:5px 12px;border-radius:20px;margin-top:8px}
-.progress-wrap{margin-bottom:24px}
-.progress-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--ink3);margin-bottom:8px}
-.progress-bar{height:4px;background:var(--rule);border-radius:2px;overflow:hidden}
-.progress-fill{height:100%;background:var(--teal-mid);border-radius:2px;transition:width 0.4s ease}
-.step{display:none}
-.step.active{display:block}
-.step-label{font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--teal-mid);margin-bottom:6px}
-.step-title{font-family:'DM Serif Display',serif;font-size:20px;font-weight:400;color:var(--ink);margin-bottom:20px;line-height:1.2}
-.q-card{background:white;border:1px solid var(--rule);border-radius:10px;padding:20px 24px;margin-bottom:16px}
-.q-num{font-size:11px;font-weight:500;color:var(--teal);background:var(--teal-light);display:inline-block;padding:2px 8px;border-radius:6px;margin-bottom:8px}
-.q-text{font-size:15px;color:var(--ink);font-weight:400;margin-bottom:6px;line-height:1.5}
-.q-note{font-size:12px;color:var(--ink3);margin-bottom:14px;line-height:1.5;font-style:italic}
-.q-note.warning{color:var(--amber);background:var(--amber-light);padding:6px 10px;border-radius:6px;font-style:normal;border-left:3px solid var(--amber)}
-.options{display:flex;flex-direction:column;gap:8px}
-.opt-label{display:flex;align-items:center;gap:10px;padding:11px 14px;border:1px solid var(--rule);border-radius:8px;cursor:pointer;transition:border-color 0.15s,background 0.15s;font-size:14px;color:var(--ink2)}
-.opt-label:hover{border-color:var(--teal-border);background:var(--teal-light)}
-.opt-label input{display:none}
-.opt-label .radio-dot{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--rule);flex-shrink:0;transition:all 0.15s;display:flex;align-items:center;justify-content:center}
-.opt-label input:checked ~ .radio-dot{border-color:var(--teal);background:var(--teal)}
-.opt-label input:checked ~ .radio-dot::after{content:'';width:6px;height:6px;border-radius:50%;background:white}
-.opt-label input:checked ~ span{color:var(--ink);font-weight:500}
-.opt-label.selected{border-color:var(--teal);background:var(--teal-light)}
-.textarea-wrap{width:100%}
-.textarea-wrap textarea{width:100%;padding:12px 14px;border:1px solid var(--rule);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);resize:vertical;min-height:90px;background:white;outline:none;transition:border-color 0.15s}
-.textarea-wrap textarea:focus{border-color:var(--teal)}
-.textarea-wrap textarea::placeholder{color:var(--ink3)}
-.nav-row{display:flex;gap:12px;justify-content:space-between;margin-top:28px;align-items:center}
-.btn{padding:11px 24px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;border:none;transition:all 0.15s}
-.btn-primary{background:var(--teal);color:white}
-.btn-primary:hover{background:#0a4f3c}
-.btn-secondary{background:white;color:var(--ink2);border:1px solid var(--rule)}
-.btn-secondary:hover{background:var(--bg);border-color:var(--ink3)}
-.btn:disabled{opacity:0.4;cursor:not-allowed}
-.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:8px}
-.role-card{background:white;border:1.5px solid var(--rule);border-radius:12px;padding:24px 20px;cursor:pointer;transition:all 0.15s;text-align:center}
-.role-card:hover{border-color:var(--teal);background:var(--teal-light)}
-.role-card.selected{border-color:var(--teal);background:var(--teal-light)}
-.role-card input{display:none}
-.role-icon{font-size:28px;margin-bottom:10px}
-.role-title{font-size:15px;font-weight:500;color:var(--ink);margin-bottom:4px}
-.role-desc{font-size:12px;color:var(--ink3);line-height:1.4}
-.thank-you{text-align:center;padding:40px 20px;display:none}
-.thank-you.active{display:block}
-.ty-icon{width:64px;height:64px;background:var(--teal-light);border-radius:50%;margin:0 auto 20px;display:flex;align-items:center;justify-content:center}
-.ty-icon svg{fill:var(--teal)}
-.thank-you h2{font-family:'DM Serif Display',serif;font-size:26px;font-weight:400;margin-bottom:12px}
-.thank-you p{color:var(--ink3);font-size:15px;max-width:440px;margin:0 auto 24px}
-.ty-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.val-error{color:var(--red);font-size:12px;margin-top:8px;display:none}
-.val-error.show{display:block}
-.divider{border:none;border-top:1px solid var(--rule);margin:24px 0}
-.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.field-wrap{display:flex;flex-direction:column;gap:6px}
-.field-wrap label{font-size:12px;font-weight:500;color:var(--ink3);text-transform:uppercase;letter-spacing:0.06em}
-.field-wrap input{padding:11px 14px;border:1px solid var(--rule);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);background:white;outline:none}
-.field-wrap input:focus{border-color:var(--teal)}
-.field-wrap .opt-note{font-size:11px;color:var(--ink3);margin-top:2px}
-.site-footer{text-align:center;padding:32px;color:var(--ink3);font-size:12px;border-top:1px solid var(--rule);margin-top:40px}
-.site-footer strong{color:var(--ink2)}
-.toast-container{position:fixed;top:20px;right:20px;z-index:9999;pointer-events:none}
-.toast{background:#B92B2B;color:white;padding:14px 20px;border-radius:8px;margin-bottom:10px;box-shadow:0 4px 12px rgba(185,43,43,0.3);font-size:14px;animation:slideIn 0.3s ease;pointer-events:auto;max-width:300px}
-@keyframes slideIn{from{transform:translateX(400px);opacity:0}to{transform:translateX(0);opacity:1}}
-@media(max-width:600px){.role-grid{grid-template-columns:1fr}.contact-grid{grid-template-columns:1fr}.survey-wrap{padding:24px 16px 60px}.toast{right:10px;left:10px;max-width:none}}
-@media print{.site-header,.nav-row,.site-footer{display:none}.step{display:block!important}.q-card{break-inside:avoid;margin-bottom:12px}}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fintegris — UIF Compliance Validation Survey</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --teal: #0B5E47;
+      --teal-mid: #1D9E75;
+      --teal-light: #E1F5EE;
+      --teal-border: #9FE1CB;
+      --ink: #1A1A18;
+      --ink2: #3D3D3A;
+      --ink3: #6B6B67;
+      --rule: #D8D6CF;
+      --bg: #FAFAF8;
+      --white: #FFFFFF;
+      --amber: #B8710F;
+      --amber-light: #FDF0DC;
+      --red: #B92B2B;
+      --red-light: #FBEAEA;
+      --shadow: 0 18px 50px rgba(26, 26, 24, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(29, 158, 117, 0.10), transparent 36rem),
+        var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    a {
+      color: var(--teal);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .site-header {
+      background: linear-gradient(135deg, #073C2E, var(--teal));
+      padding: 18px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      box-shadow: 0 12px 32px rgba(11, 94, 71, 0.20);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-mark {
+      width: 38px;
+      height: 38px;
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-mark svg {
+      fill: white;
+    }
+
+    .logo-text {
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .logo-sub {
+      color: rgba(255, 255, 255, 0.68);
+      font-size: 12px;
+      margin-top: 1px;
+    }
+
+    .header-tag {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      font-size: 11px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .survey-wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    .intro-card {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid var(--rule);
+      border-radius: 18px;
+      padding: 30px 32px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+
+    .intro-card h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(25px, 4vw, 34px);
+      line-height: 1.08;
+      font-weight: 400;
+      color: var(--ink);
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    .intro-card p {
+      color: var(--ink3);
+      font-size: 14px;
+      line-height: 1.75;
+      margin-bottom: 8px;
+    }
+
+    .intro-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .time-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      background: var(--teal-light);
+      color: var(--teal);
+      padding: 6px 12px;
+      border-radius: 999px;
+      margin-top: 10px;
+      border: 1px solid rgba(11, 94, 71, 0.10);
+    }
+
+    .progress-wrap {
+      margin-bottom: 26px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(216, 214, 207, 0.70);
+      padding: 12px 14px;
+      border-radius: 14px;
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--ink3);
+      margin-bottom: 8px;
+    }
+
+    .progress-bar {
+      height: 5px;
+      background: var(--rule);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--teal), var(--teal-mid));
+      border-radius: 999px;
+      transition: width 0.35s ease;
+    }
+
+    .step {
+      display: none;
+    }
+
+    .step.active {
+      display: block;
+      animation: fadeUp 0.22s ease both;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .required {
+      color: var(--red);
+      font-weight: 700;
+    }
+
+    .step-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--teal-mid);
+      margin-bottom: 7px;
+    }
+
+    .step-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 24px;
+      font-weight: 400;
+      color: var(--ink);
+      margin-bottom: 20px;
+      line-height: 1.16;
+      letter-spacing: -0.01em;
+    }
+
+    .q-card {
+      background: white;
+      border: 1px solid var(--rule);
+      border-radius: 16px;
+      padding: 21px 24px;
+      margin-bottom: 16px;
+      box-shadow: 0 9px 28px rgba(26, 26, 24, 0.045);
+    }
+
+    .q-card.is-invalid {
+      border-color: rgba(185, 43, 43, 0.55);
+      box-shadow: 0 0 0 3px rgba(185, 43, 43, 0.08);
+    }
+
+    .q-num {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--teal);
+      background: var(--teal-light);
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 7px;
+      margin-bottom: 9px;
+    }
+
+    .q-text {
+      font-size: 15px;
+      color: var(--ink);
+      font-weight: 500;
+      margin-bottom: 7px;
+      line-height: 1.5;
+    }
+
+    .q-note {
+      font-size: 12px;
+      color: var(--ink3);
+      margin-bottom: 14px;
+      line-height: 1.55;
+      font-style: italic;
+    }
+
+    .q-note.warning {
+      color: var(--amber);
+      background: var(--amber-light);
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-style: normal;
+      border-left: 3px solid var(--amber);
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .opt-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 14px;
+      border: 1px solid var(--rule);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s, transform 0.15s;
+      font-size: 14px;
+      color: var(--ink2);
+      background: white;
+    }
+
+    .opt-label:hover {
+      border-color: var(--teal-border);
+      background: var(--teal-light);
+      transform: translateY(-1px);
+    }
+
+    .opt-label input {
+      display: none;
+    }
+
+    .radio-dot {
+      width: 17px;
+      height: 17px;
+      border-radius: 50%;
+      border: 1.5px solid var(--rule);
+      flex-shrink: 0;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+    }
+
+    .opt-label input:checked ~ .radio-dot {
+      border-color: var(--teal);
+      background: var(--teal);
+    }
+
+    .opt-label input:checked ~ .radio-dot::after {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: white;
+    }
+
+    .opt-label input:checked ~ span {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .opt-label.selected {
+      border-color: var(--teal);
+      background: var(--teal-light);
+    }
+
+    .textarea-wrap textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--rule);
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--ink);
+      resize: vertical;
+      min-height: 98px;
+      background: white;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .textarea-wrap textarea:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(29, 158, 117, 0.12);
+    }
+
+    .textarea-wrap textarea::placeholder {
+      color: var(--ink3);
+    }
+
+    .nav-row {
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      margin-top: 28px;
+      align-items: center;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+      min-height: 45px;
+    }
+
+    .btn-primary {
+      background: var(--teal);
+      color: white;
+      box-shadow: 0 10px 24px rgba(11, 94, 71, 0.18);
+    }
+
+    .btn-primary:hover {
+      background: #0a4f3c;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: white;
+      color: var(--ink2);
+      border: 1px solid var(--rule);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg);
+      border-color: var(--ink3);
+    }
+
+    .btn:disabled {
+      opacity: 0.48;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .role-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 8px;
+    }
+
+    .role-card {
+      background: white;
+      border: 1.5px solid var(--rule);
+      border-radius: 18px;
+      padding: 25px 20px;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+      box-shadow: 0 9px 28px rgba(26, 26, 24, 0.04);
+    }
+
+    .role-card:hover,
+    .role-card.selected {
+      border-color: var(--teal);
+      background: var(--teal-light);
+      transform: translateY(-2px);
+    }
+
+    .role-card input {
+      display: none;
+    }
+
+    .role-icon {
+      font-size: 31px;
+      margin-bottom: 10px;
+    }
+
+    .role-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 5px;
+    }
+
+    .role-desc {
+      font-size: 12px;
+      color: var(--ink3);
+      line-height: 1.45;
+    }
+
+    .thank-you {
+      text-align: center;
+      padding: 44px 22px;
+      display: none;
+      background: white;
+      border: 1px solid var(--rule);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .thank-you.active {
+      display: block;
+      animation: fadeUp 0.25s ease both;
+    }
+
+    .ty-icon {
+      width: 66px;
+      height: 66px;
+      background: var(--teal-light);
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(11, 94, 71, 0.12);
+    }
+
+    .ty-icon svg {
+      fill: var(--teal);
+    }
+
+    .thank-you h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 28px;
+      font-weight: 400;
+      margin-bottom: 12px;
+    }
+
+    .thank-you p {
+      color: var(--ink3);
+      font-size: 15px;
+      max-width: 470px;
+      margin: 0 auto 22px;
+    }
+
+    .ty-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .val-error {
+      color: var(--red);
+      font-size: 12px;
+      margin-top: 10px;
+      display: none;
+      background: var(--red-light);
+      border: 1px solid rgba(185, 43, 43, 0.18);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+
+    .val-error.show {
+      display: block;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .field-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field-wrap label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink3);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .field-wrap input {
+      padding: 12px 14px;
+      border: 1px solid var(--rule);
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--ink);
+      background: white;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+    }
+
+    .field-wrap input:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(29, 158, 117, 0.12);
+    }
+
+    .field-wrap input.is-invalid {
+      border-color: var(--red);
+      background: #fffafa;
+      box-shadow: 0 0 0 3px rgba(185, 43, 43, 0.09);
+    }
+
+    .site-footer {
+      text-align: center;
+      padding: 32px;
+      color: var(--ink3);
+      font-size: 12px;
+      border-top: 1px solid var(--rule);
+      margin-top: 40px;
+    }
+
+    .site-footer strong {
+      color: var(--ink2);
+    }
+
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: var(--red);
+      color: white;
+      padding: 14px 18px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      box-shadow: 0 12px 30px rgba(185, 43, 43, 0.26);
+      font-size: 14px;
+      animation: slideIn 0.25s ease;
+      pointer-events: auto;
+      max-width: 340px;
+    }
+
+    .toast.success {
+      background: var(--teal);
+      box-shadow: 0 12px 30px rgba(11, 94, 71, 0.24);
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .site-header {
+        padding: 16px 18px;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .header-tag {
+        align-self: flex-start;
+      }
+
+      .role-grid,
+      .contact-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .survey-wrap {
+        padding: 24px 16px 60px;
+      }
+
+      .intro-card,
+      .q-card {
+        padding: 22px 18px;
+      }
+
+      .toast-container {
+        left: 12px;
+        right: 12px;
+      }
+
+      .toast {
+        max-width: none;
+      }
+
+      .nav-row {
+        flex-direction: column-reverse;
+        align-items: stretch;
+      }
+
+      .nav-row span {
+        display: none;
+      }
+    }
+
+    @media print {
+      .site-header,
+      .nav-row,
+      .site-footer,
+      .progress-wrap,
+      .toast-container {
+        display: none !important;
+      }
+
+      .step {
+        display: block !important;
+      }
+
+      .q-card {
+        break-inside: avoid;
+        margin-bottom: 12px;
+        box-shadow: none;
+      }
+
+      body {
+        background: white;
+      }
+    }
+  </style>
 </head>
 <body>
-
-<header class="site-header">
-  <div class="logo">
-    <div class="logo-mark">
-      <svg width="20" height="20" viewBox="0 0 20 20"><path d="M10 2C5.58 2 2 5.58 2 10s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zm-1 11.5l-3.5-3.5 1.41-1.41L9 10.67l4.59-4.58L15 7.5l-6 6z"/></svg>
+  <header class="site-header">
+    <div class="logo">
+      <div class="logo-mark" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 20 20">
+          <path d="M10 2C5.58 2 2 5.58 2 10s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zm-1 11.5l-3.5-3.5 1.41-1.41L9 10.67l4.59-4.58L15 7.5l-6 6z" />
+        </svg>
+      </div>
+      <div>
+        <div class="logo-text">Fintegris</div>
+        <div class="logo-sub">UIF Compliance Platform · A Didusec product</div>
+      </div>
     </div>
-    <div>
-      <div class="logo-text">Fintegris</div>
-      <div class="logo-sub">UIF Compliance Platform · A Didusec product</div>
+    <div class="header-tag">Market Validation Survey</div>
+  </header>
+
+  <main class="survey-wrap">
+    <div class="intro-card">
+      <h1>UIF Compliance — Understanding the Gap</h1>
+      <p>Didusec is developing <strong>Fintegris</strong>, a platform to automate monthly UIF employer declarations for South African SMMEs. This brief survey helps us understand current compliance challenges and whether this solution addresses a real need.</p>
+      <p>All responses are confidential and used only to inform product development.</p>
+      <span class="time-note">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" />
+        </svg>
+        5–7 minutes to complete
+      </span>
     </div>
-  </div>
-  <div class="header-tag">Market Validation Survey</div>
-</header>
 
-<main class="survey-wrap">
-
-  <div class="intro-card">
-    <h1>UIF Compliance — Understanding the Gap</h1>
-    <p>Didusec is developing <strong>Fintegris</strong>, a platform to automate monthly UIF employer declarations for South African SMMEs. This brief survey helps us understand current compliance challenges and whether this solution addresses a real need.</p>
-    <p>All responses are confidential and used only to inform product development.</p>
-    <span class="time-note">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      5–7 minutes to complete
-    </span>
-  </div>
-
-  <div class="progress-wrap" id="progressWrap">
-    <div class="progress-meta">
-      <span id="stepLabel">Step 1 of 5</span>
-      <span id="stepPct">20%</span>
-    </div>
-    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:20%"></div></div>
-  </div>
-
-  <!-- STEP 0: Role selection -->
-  <div class="step active" id="step-0">
-    <div class="step-label">Getting started</div>
-    <div class="step-title">Who are you completing this survey as?</div>
-    <div class="role-grid">
-      <label class="role-card" id="role-employer" onclick="selectRole('employer')">
-        <input type="radio" name="role" value="employer">
-        <div class="role-icon">🏢</div>
-        <div class="role-title">Business owner / Employer</div>
-        <div class="role-desc">I own or manage a business with employees in South Africa</div>
-      </label>
-      <label class="role-card" id="role-practitioner" onclick="selectRole('practitioner')">
-        <input type="radio" name="role" value="practitioner">
-        <div class="role-icon">🧾</div>
-        <div class="role-title">Accountant / Labour practitioner</div>
-        <div class="role-desc">I manage payroll or compliance for multiple businesses</div>
-      </label>
-    </div>
-    <div class="val-error" id="err-role">Please select who you are before continuing.</div>
-    <div class="nav-row">
-      <span></span>
-      <button class="btn btn-primary" onclick="nextStep()">Continue →</button>
-    </div>
-  </div>
-
-  <!-- EMPLOYER: Step 1 — Contact + business details -->
-  <div class="step" id="step-E1">
-    <div class="step-label">Section A · About your business</div>
-    <div class="step-title">Tell us a little about your business</div>
-
-    <div class="q-card">
-      <div class="q-num">Contact (optional)</div>
-      <div class="q-text">Your details — for follow-up only, never shared</div>
-      <div class="q-note">Fields are optional. Leave blank to respond anonymously.</div>
-      <div class="contact-grid">
-        <div class="field-wrap"><label>Name</label><input type="text" id="e-name" placeholder="Your name"><span class="opt-note">Optional</span></div>
-        <div class="field-wrap"><label>Company</label><input type="text" id="e-company" placeholder="Business name"><span class="opt-note">Optional</span></div>
-        <div class="field-wrap"><label>Email</label><input type="email" id="e-email" placeholder="you@business.co.za"><span class="opt-note">Optional</span></div>
-        <div class="field-wrap"><label>Phone</label><input type="tel" id="e-phone" placeholder="+27 ..."><span class="opt-note">Optional</span></div>
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-meta">
+        <span id="stepLabel">Step 1 of 5</span>
+        <span id="stepPct">20%</span>
+      </div>
+      <div class="progress-bar" aria-hidden="true">
+        <div class="progress-fill" id="progressFill" style="width:20%"></div>
       </div>
     </div>
 
-    <div class="q-card">
-      <div class="q-num">Q1</div>
-      <div class="q-text">How many employees does your business currently have?</div>
-      <div class="options">
-        <label class="opt-label"><input type="radio" name="e_q1" value="1-5"><div class="radio-dot"></div><span>1–5 employees</span></label>
-        <label class="opt-label"><input type="radio" name="e_q1" value="6-20"><div class="radio-dot"></div><span>6–20 employees</span></label>
-        <label class="opt-label"><input type="radio" name="e_q1" value="21-50"><div class="radio-dot"></div><span>21–50 employees</span></label>
-        <label class="opt-label"><input type="radio" name="e_q1" value="51-200"><div class="radio-dot"></div><span>51–200 employees</span></label>
-        <label class="opt-label"><input type="radio" name="e_q1" value="200+"><div class="radio-dot"></div><span>More than 200 employees</span></label>
+    <!-- STEP 0: Role selection -->
+    <div class="step active" id="step-0">
+      <div class="step-label">Getting started</div>
+      <div class="step-title">Who are you completing this survey as?</div>
+      <div class="role-grid">
+        <label class="role-card" id="role-employer">
+          <input type="radio" name="role" value="employer" />
+          <div class="role-icon">🏢</div>
+          <div class="role-title">Business owner / Employer</div>
+          <div class="role-desc">I own or manage a business with employees in South Africa</div>
+        </label>
+        <label class="role-card" id="role-practitioner">
+          <input type="radio" name="role" value="practitioner" />
+          <div class="role-icon">🧾</div>
+          <div class="role-title">Accountant / Labour practitioner</div>
+          <div class="role-desc">I manage payroll or compliance for multiple businesses</div>
+        </label>
+      </div>
+      <div class="val-error" id="err-role">Please select who you are before continuing.</div>
+      <div class="nav-row">
+        <span></span>
+        <button type="button" class="btn btn-primary" onclick="nextStep()">Continue →</button>
       </div>
     </div>
 
-    <div class="q-card">
-      <div class="q-num">Q2</div>
-      <div class="q-text">In which province is your business primarily based?</div>
-      <div class="options">
-        <label class="opt-label"><input type="radio" name="e_q2" value="gauteng"><div class="radio-dot"></div><span>Gauteng</span></label>
-        <label class="opt-label"><input type="radio" name="e_q2" value="wc"><div class="radio-dot"></div><span>Western Cape</span></label>
-        <label class="opt-label"><input type="radio" name="e_q2" value="kzn"><div class="radio-dot"></div><span>KwaZulu-Natal</span></label>
-        <label class="opt-label"><input type="radio" name="e_q2" value="ec"><div class="radio-dot"></div><span>Eastern Cape</span></label>
-        <label class="opt-label"><input type="radio" name="e_q2" value="other"><div class="radio-dot"></div><span>Other province</span></label>
+    <!-- EMPLOYER: Step 1 — Contact + business details -->
+    <div class="step" id="step-E1">
+      <div class="step-label">Section A · About your business</div>
+      <div class="step-title">Tell us a little about your business</div>
+
+      <div class="q-card" data-question="employer-contact">
+        <div class="q-num">Contact details</div>
+        <div class="q-text">Your details are required so we can verify responses and follow up where needed.</div>
+        <div class="q-note">These details will only be used for survey follow-up and will not be shared publicly.</div>
+        <div class="contact-grid">
+          <div class="field-wrap">
+            <label for="e-name">Name <span class="required">*</span></label>
+            <input type="text" id="e-name" placeholder="Your name" autocomplete="name" required />
+          </div>
+          <div class="field-wrap">
+            <label for="e-company">Company <span class="required">*</span></label>
+            <input type="text" id="e-company" placeholder="Business name" autocomplete="organization" required />
+          </div>
+          <div class="field-wrap">
+            <label for="e-email">Email <span class="required">*</span></label>
+            <input type="email" id="e-email" placeholder="you@business.co.za" autocomplete="email" required />
+          </div>
+          <div class="field-wrap">
+            <label for="e-phone">Phone <span class="required">*</span></label>
+            <input type="tel" id="e-phone" placeholder="+27 ..." autocomplete="tel" required />
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-question="e_q1">
+        <div class="q-num">Q1</div>
+        <div class="q-text">How many employees does your business currently have?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="e_q1" value="1-5" /><div class="radio-dot"></div><span>1–5 employees</span></label>
+          <label class="opt-label"><input type="radio" name="e_q1" value="6-20" /><div class="radio-dot"></div><span>6–20 employees</span></label>
+          <label class="opt-label"><input type="radio" name="e_q1" value="21-50" /><div class="radio-dot"></div><span>21–50 employees</span></label>
+          <label class="opt-label"><input type="radio" name="e_q1" value="51-200" /><div class="radio-dot"></div><span>51–200 employees</span></label>
+          <label class="opt-label"><input type="radio" name="e_q1" value="200+" /><div class="radio-dot"></div><span>More than 200 employees</span></label>
+        </div>
+      </div>
+
+      <div class="q-card" data-question="e_q2">
+        <div class="q-num">Q2</div>
+        <div class="q-text">In which province is your business primarily based?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="e_q2" value="gauteng" /><div class="radio-dot"></div><span>Gauteng</span></label>
+          <label class="opt-label"><input type="radio" name="e_q2" value="wc" /><div class="radio-dot"></div><span>Western Cape</span></label>
+          <label class="opt-label"><input type="radio" name="e_q2" value="kzn" /><div class="radio-dot"></div><span>KwaZulu-Natal</span></label>
+          <label class="opt-label"><input type="radio" name="e_q2" value="ec" /><div class="radio-dot"></div><span>Eastern Cape</span></label>
+          <label class="opt-label"><input type="radio" name="e_q2" value="other" /><div class="radio-dot"></div><span>Other province</span></label>
+        </div>
+      </div>
+
+      <div class="q-card" data-question="e_q3">
+        <div class="q-num">Q3</div>
+        <div class="q-text">Is your business registered with SARS for PAYE and UIF deductions?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="e_q3" value="yes" /><div class="radio-dot"></div><span>Yes, definitely registered</span></label>
+          <label class="opt-label"><input type="radio" name="e_q3" value="maybe" /><div class="radio-dot"></div><span>Possibly, but I'm not certain</span></label>
+          <label class="opt-label"><input type="radio" name="e_q3" value="no" /><div class="radio-dot"></div><span>No, not registered</span></label>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button type="button" class="btn btn-secondary" onclick="prevStep()">← Back</button>
+        <button type="button" class="btn btn-primary" onclick="nextStep()">Continue →</button>
       </div>
     </div>
 
-    <div class="q-card">
-      <div class="q-num">Q3</div>
-      <div class="q-text">Is your business registered with SARS for PAYE and UIF deductions?</div>
-      <div class="options">
-        <label class="opt-label"><input type="radio" name="e_q3" value="yes"><div class="radio-dot"></div><span>Yes, definitely registered</span></label>
-        <label class="opt-label"><input type="radio" name="e_q3" value="maybe"><div class="radio-dot"></div><span>Possibly, but I'm not certain</span></label>
-        <label class="opt-label"><input type="radio" name="e_q3" value="no"><div class="radio-dot"></div><span>No, not registered</span></label>
+    <!-- EMPLOYER: Step 2 — Current UIF practice -->
+    <div class="step" id="step-E2">
+      <div class="step-label">Section B · Your current UIF practice</div>
+      <div class="step-title">How do you currently handle UIF obligations?</div>
+
+      <div class="q-card" data-question="e_q4">
+        <div class="q-num">Q4</div>
+        <div class="q-text">Have you heard of uFiling (ufiling.labour.gov.za)?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="e_q4" value="use_it" /><div class="radio-dot"></div><span>Yes — I use it regularly</span></label>
+          <label class="opt-label"><input type="radio" name="e_q4" value="heard" /><div class="radio-dot"></div><span>I've heard of it but never logged in</span></label>
+          <label class="opt-label"><input type="radio" name="e_q4" value="never" /><div class="radio-dot"></div><span>No — this is the first I'm hearing about it</span></label>
+        </div>
+      </div>
+
+      <div class="q-card" data-question="e_q5">
+        <div class="q-num">Q5</div>
+        <div class="q-text">Are you currently registered on uFiling as an employer?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="e_q5" value="registered_active" /><div class="radio-dot"></div><span>Yes — registered and actively using it</span></label>
+          <label class="opt-label"><input type="radio" name="e_q5" value="registered_inactive" /><div class="radio-dot"></div><span>Registered but not sure what to do with it</span></label>
+          <label class="opt-label"><input type="radio" name="e_q5" value="not_registered" /><div class="radio-dot"></div><span>Not registered</span></label>
+          <label class="opt-label"><input type="radio" name="e_q5" value="dont_know" /><div class="radio-dot"></div><span>I don't know</span></label>
+        </div>
+      </div>
+
+      <div class="q-card" data-question="e_q6">
+        <div class="q-num">Q6</div>
+        <div class="q-text">Did you know that paying UIF to SARS via your monthly EMP201 is a <strong>separate obligation</strong> from submitting monthly employee declarations to the Department of Labour (DOL)?</div>
+        <div class="q-note">These are two distinct legal requirements under the Unemployment Insurance Act 63 of 2001.</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="e_q6" value="aware_both" /><div class="radio-dot"></div><span>Yes — I was fully aware of both</span></label>
+          <label class="opt-label"><input type="radio" name="e_q6" value="vague" /><div class="radio-dot"></div><span>I had some idea but wasn't sure of the difference</span></label>
+          <label class="opt-label"><input type="radio" name="e_q6" value="thought_sars_enough" /><div class="radio-dot"></div><span>No — I thought paying SARS was sufficient</span></label>
+          <label class="opt-label"><input type="radio" name="e_q6" value="confused" /><div class="radio-dot"></div><span>I'm not sure what this means</span></label>
+        </div>
+      </div>
+
+      <div class="q-card" data-question="e_q7">
+        <div class="q-num">Q7</div>
+        <div class="q-text">How do you currently handle the monthly UI-19 declaration to the Department of Labour?</div>
+        <div class="q-note">The UI-19 must be submitted to the DOL by the 7th of every month, listing all employees and their remuneration.</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="e_q7" value="monthly" /><div class="radio-dot"></div><span>I submit via uFiling every month</span></label>
+          <label class="opt-label"><input type="radio" name="e_q7" value="accountant" /><div class="radio-dot"></div><span>My accountant/bookkeeper handles it</span></label>
+          <label class="opt-label"><input type="radio" name="e_q7" value="occasional" /><div class="radio-dot"></div><span>I submit occasionally when I remember</span></label>
+          <label class="opt-label"><input type="radio" name="e_q7" value="not_doing" /><div class="radio-dot"></div><span>I'm not doing this at all</span></label>
+          <label class="opt-label"><input type="radio" name="e_q7" value="didnt_know" /><div class="radio-dot"></div><span>I didn't know this was required</span></label>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button type="button" class="btn btn-secondary" onclick="prevStep()">← Back</button>
+        <button type="button" class="btn btn-primary" onclick="nextStep()">Continue →</button>
       </div>
     </div>
 
-    <div class="nav-row">
-      <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
-      <button class="btn btn-primary" onclick="nextStep()">Continue →</button>
-    </div>
-  </div>
+    <!-- EMPLOYER: Step 3 — Risk awareness -->
+    <div class="step" id="step-E3">
+      <div class="step-label">Section C · Risk &amp; awareness</div>
+      <div class="step-title">Are you aware of the risks of non-compliance?</div>
 
-  <!-- EMPLOYER: Step 2 — Current UIF practice -->
-  <div class="step" id="step-E2">
-    <div class="step-label">Section B · Your current UIF practice</div>
-    <div class="step-title">How do you currently handle UIF obligations?</div>
+      <div class="q-card" data-question="e_q8">
+        <div class="q-num">Q8</div>
+        <div class="q-text">Have you ever had an employee whose UIF claim (unemployment, maternity, or illness benefit) was rejected or significantly delayed?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="e_q8" value="yes" /><div class="radio-dot"></div><span>Yes — this has happened</span></label>
+          <label class="opt-label"><input type="radio" name="e_q8" value="not_aware" /><div class="radio-dot"></div><span>Not that I'm aware of</span></label>
+          <label class="opt-label"><input type="radio" name="e_q8" value="no_claims" /><div class="radio-dot"></div><span>I've never had an employee claim UIF</span></label>
+        </div>
+      </div>
 
-    <div class="q-card">
-      <div class="q-num">Q4</div>
-      <div class="q-text">Have you heard of uFiling (ufiling.labour.gov.za)?</div>
-      <div class="options">
-        <label class="opt-label"><input type="radio" name="e_q4" value="use_it"><div class="radio-dot"></div><span>Yes — I use it regularly</span></label>
-        <label class="opt-label"><input type="radio" name="e_q4" value="heard"><div class="radio-dot"></div><span>I've heard of it but never logged in</span></label>
-        <label class="opt-label"><input type="radio" name="e_q4" value="never"><div class="radio-dot"></div><span>No — this is the first I'm hearing about it</span></label>
+      <div class="q-card" data-question="e_q9">
+        <div class="q-num">Q9</div>
+        <div class="q-text">Are you aware that the UIF and SARS are formally collaborating to share employer data — which would automatically identify employers who pay UIF to SARS but don't submit declarations to the DOL?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="e_q9" value="yes" /><div class="radio-dot"></div><span>Yes — I knew about this</span></label>
+          <label class="opt-label"><input type="radio" name="e_q9" value="no" /><div class="radio-dot"></div><span>No — I was not aware</span></label>
+          <label class="opt-label"><input type="radio" name="e_q9" value="unsure" /><div class="radio-dot"></div><span>I'm not sure what the implications would be</span></label>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button type="button" class="btn btn-secondary" onclick="prevStep()">← Back</button>
+        <button type="button" class="btn btn-primary" onclick="nextStep()">Continue →</button>
       </div>
     </div>
 
-    <div class="q-card">
-      <div class="q-num">Q5</div>
-      <div class="q-text">Are you currently registered on uFiling as an employer?</div>
-      <div class="options">
-        <label class="opt-label"><input type="radio" name="e_q5" value="registered_active"><div class="radio-dot"></div><span>Yes — registered and actively using it</span></label>
-        <label class="opt-label"><input type="radio" name="e_q5" value="registered_inactive"><div class="radio-dot"></div><span>Registered but not sure what to do with it</span></label>
-        <label class="opt-label"><input type="radio" name="e_q5" value="not_registered"><div class="radio-dot"></div><span>Not registered</span></label>
-        <label class="opt-label"><input type="radio" name="e_q5" value="dont_know"><div class="radio-dot"></div><span>I don't know</span></label>
+    <!-- EMPLOYER: Step 4 — Value proposition -->
+    <div class="step" id="step-E4">
+      <div class="step-label">Section D · Value &amp; willingness to pay</div>
+      <div class="step-title">Would Fintegris solve a problem for you?</div>
+
+      <div class="q-card" data-question="e_q11">
+        <div class="q-num">Q11</div>
+        <div class="q-text">How much time do you (or your team/accountant) spend managing UIF declarations per month?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="e_q11" value="none" /><div class="radio-dot"></div><span>We don't do it at all</span></label>
+          <label class="opt-label"><input type="radio" name="e_q11" value="under_1h" /><div class="radio-dot"></div><span>Less than 1 hour</span></label>
+          <label class="opt-label"><input type="radio" name="e_q11" value="1_3h" /><div class="radio-dot"></div><span>1–3 hours</span></label>
+          <label class="opt-label"><input type="radio" name="e_q11" value="over_3h" /><div class="radio-dot"></div><span>More than 3 hours</span></label>
+          <label class="opt-label"><input type="radio" name="e_q11" value="accountant" /><div class="radio-dot"></div><span>Handled by accountant — I don't know</span></label>
+        </div>
+      </div>
+
+      <div class="q-card" data-question="e_q12">
+        <div class="q-num">Q12</div>
+        <div class="q-text">If Fintegris automatically submitted your monthly UIF declarations — handling everything by the 7th of the month, sending you DOL confirmation, and reconciling your SARS vs DOL records — how valuable would this be?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="e_q12" value="extremely" /><div class="radio-dot"></div><span>Extremely valuable — this is exactly what I need</span></label>
+          <label class="opt-label"><input type="radio" name="e_q12" value="very" /><div class="radio-dot"></div><span>Very valuable</span></label>
+          <label class="opt-label"><input type="radio" name="e_q12" value="somewhat" /><div class="radio-dot"></div><span>Somewhat valuable</span></label>
+          <label class="opt-label"><input type="radio" name="e_q12" value="not_valuable" /><div class="radio-dot"></div><span>Not valuable</span></label>
+          <label class="opt-label"><input type="radio" name="e_q12" value="already_compliant" /><div class="radio-dot"></div><span>I'm already fully compliant — I don't need this</span></label>
+        </div>
+      </div>
+
+      <div class="q-card" data-question="e_q13">
+        <div class="q-num">Q13</div>
+        <div class="q-text">What would you be willing to pay per month for full UIF declaration automation?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="e_q13" value="nothing" /><div class="radio-dot"></div><span>Nothing — I would do it myself</span></label>
+          <label class="opt-label"><input type="radio" name="e_q13" value="under_299" /><div class="radio-dot"></div><span>Up to R299/month</span></label>
+          <label class="opt-label"><input type="radio" name="e_q13" value="300_499" /><div class="radio-dot"></div><span>R300 – R499/month</span></label>
+          <label class="opt-label"><input type="radio" name="e_q13" value="500_699" /><div class="radio-dot"></div><span>R500 – R699/month</span></label>
+          <label class="opt-label"><input type="radio" name="e_q13" value="700_999" /><div class="radio-dot"></div><span>R700 – R999/month</span></label>
+          <label class="opt-label"><input type="radio" name="e_q13" value="over_1000" /><div class="radio-dot"></div><span>More than R1,000/month</span></label>
+        </div>
+      </div>
+
+      <div class="q-card">
+        <div class="q-num">Q14 — Open question</div>
+        <div class="q-text">What is the single biggest UIF-related challenge for your business right now?</div>
+        <div class="textarea-wrap">
+          <textarea id="e_q14" placeholder="Share your thoughts here..."></textarea>
+        </div>
+      </div>
+
+      <div class="q-card" data-question="e_q15">
+        <div class="q-num">Q15</div>
+        <div class="q-text">Would you be open to a brief follow-up conversation with the Fintegris team?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="e_q15" value="yes" /><div class="radio-dot"></div><span>Yes — happy to chat</span></label>
+          <label class="opt-label"><input type="radio" name="e_q15" value="maybe" /><div class="radio-dot"></div><span>Maybe — depends on timing</span></label>
+          <label class="opt-label"><input type="radio" name="e_q15" value="no" /><div class="radio-dot"></div><span>No, thank you</span></label>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button type="button" class="btn btn-secondary" onclick="prevStep()">← Back</button>
+        <button type="button" class="btn btn-primary" onclick="submitSurvey()">Submit responses ✓</button>
       </div>
     </div>
 
-    <div class="q-card">
-      <div class="q-num">Q6</div>
-      <div class="q-text">Did you know that paying UIF to SARS via your monthly EMP201 is a <strong>separate obligation</strong> from submitting monthly employee declarations to the Department of Labour (DOL)?</div>
-      <div class="q-note">These are two distinct legal requirements under the Unemployment Insurance Act 63 of 2001.</div>
-      <div class="options">
-        <label class="opt-label"><input type="radio" name="e_q6" value="aware_both"><div class="radio-dot"></div><span>Yes — I was fully aware of both</span></label>
-        <label class="opt-label"><input type="radio" name="e_q6" value="vague"><div class="radio-dot"></div><span>I had some idea but wasn't sure of the difference</span></label>
-        <label class="opt-label"><input type="radio" name="e_q6" value="thought_sars_enough"><div class="radio-dot"></div><span>No — I thought paying SARS was sufficient</span></label>
-        <label class="opt-label"><input type="radio" name="e_q6" value="confused"><div class="radio-dot"></div><span>I'm not sure what this means</span></label>
+    <!-- PRACTITIONER: Step 1 — Contact + practice details -->
+    <div class="step" id="step-P1">
+      <div class="step-label">Section A · About your practice</div>
+      <div class="step-title">Tell us about your accounting practice</div>
+
+      <div class="q-card">
+        <div class="q-num">Contact details</div>
+        <div class="q-text">Your details are optional and used for follow-up only.</div>
+        <div class="q-note">Leave blank if you prefer to respond anonymously.</div>
+        <div class="contact-grid">
+          <div class="field-wrap"><label for="p-name">Name</label><input type="text" id="p-name" placeholder="Your name" autocomplete="name" /></div>
+          <div class="field-wrap"><label for="p-firm">Firm / practice</label><input type="text" id="p-firm" placeholder="Firm name" autocomplete="organization" /></div>
+          <div class="field-wrap"><label for="p-email">Email</label><input type="email" id="p-email" placeholder="you@firm.co.za" autocomplete="email" /></div>
+          <div class="field-wrap"><label for="p-phone">Phone</label><input type="tel" id="p-phone" placeholder="+27 ..." autocomplete="tel" /></div>
+        </div>
+      </div>
+
+      <div class="q-card" data-question="p_q1">
+        <div class="q-num">P1</div>
+        <div class="q-text">How many SMME clients do you currently manage for accounting, payroll, or compliance?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="p_q1" value="1-10" /><div class="radio-dot"></div><span>1–10 clients</span></label>
+          <label class="opt-label"><input type="radio" name="p_q1" value="11-30" /><div class="radio-dot"></div><span>11–30 clients</span></label>
+          <label class="opt-label"><input type="radio" name="p_q1" value="31-100" /><div class="radio-dot"></div><span>31–100 clients</span></label>
+          <label class="opt-label"><input type="radio" name="p_q1" value="100+" /><div class="radio-dot"></div><span>More than 100 clients</span></label>
+        </div>
+      </div>
+
+      <div class="q-card" data-question="p_q2">
+        <div class="q-num">P2</div>
+        <div class="q-text">Are you registered as a Labour Practitioner on uFiling (ufiling.labour.gov.za)?</div>
+        <div class="q-note">The Labour Practitioner model allows accountants to submit UIF declarations on behalf of multiple employer clients.</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="p_q2" value="yes_lp" /><div class="radio-dot"></div><span>Yes — I'm a registered Labour Practitioner</span></label>
+          <label class="opt-label"><input type="radio" name="p_q2" value="no_didnt_know" /><div class="radio-dot"></div><span>No — I wasn't aware this was possible</span></label>
+          <label class="opt-label"><input type="radio" name="p_q2" value="no_considering" /><div class="radio-dot"></div><span>No — but I'm considering registering</span></label>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button type="button" class="btn btn-secondary" onclick="prevStep()">← Back</button>
+        <button type="button" class="btn btn-primary" onclick="nextStep()">Continue →</button>
       </div>
     </div>
 
-    <div class="q-card">
-      <div class="q-num">Q7</div>
-      <div class="q-text">How do you currently handle the monthly UI-19 declaration to the Department of Labour?</div>
-      <div class="q-note">The UI-19 must be submitted to the DOL by the 7th of every month, listing all employees and their remuneration.</div>
-      <div class="options">
-        <label class="opt-label"><input type="radio" name="e_q7" value="monthly"><div class="radio-dot"></div><span>I submit via uFiling every month</span></label>
-        <label class="opt-label"><input type="radio" name="e_q7" value="accountant"><div class="radio-dot"></div><span>My accountant/bookkeeper handles it</span></label>
-        <label class="opt-label"><input type="radio" name="e_q7" value="occasional"><div class="radio-dot"></div><span>I submit occasionally when I remember</span></label>
-        <label class="opt-label"><input type="radio" name="e_q7" value="not_doing"><div class="radio-dot"></div><span>I'm not doing this at all</span></label>
-        <label class="opt-label"><input type="radio" name="e_q7" value="didnt_know"><div class="radio-dot"></div><span>I didn't know this was required</span></label>
+    <!-- PRACTITIONER: Step 2 — Client compliance -->
+    <div class="step" id="step-P2">
+      <div class="step-label">Section B · Client compliance</div>
+      <div class="step-title">How compliant are your clients with UIF declarations?</div>
+
+      <div class="q-card" data-question="p_q3">
+        <div class="q-num">P3</div>
+        <div class="q-text">What proportion of your SMME clients are currently submitting monthly UI-19 declarations to the Department of Labour?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="p_q3" value="most" /><div class="radio-dot"></div><span>Most or all (over 80%)</span></label>
+          <label class="opt-label"><input type="radio" name="p_q3" value="half" /><div class="radio-dot"></div><span>About half (40–80%)</span></label>
+          <label class="opt-label"><input type="radio" name="p_q3" value="some" /><div class="radio-dot"></div><span>Some (10–40%)</span></label>
+          <label class="opt-label"><input type="radio" name="p_q3" value="few" /><div class="radio-dot"></div><span>Very few or none (under 10%)</span></label>
+          <label class="opt-label"><input type="radio" name="p_q3" value="unsure" /><div class="radio-dot"></div><span>I'm not sure</span></label>
+        </div>
+      </div>
+
+      <div class="q-card" data-question="p_q4">
+        <div class="q-num">P4</div>
+        <div class="q-text">How do you currently submit UIF declarations for clients who need them?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="p_q4" value="ufiling_lp" /><div class="radio-dot"></div><span>Via uFiling using my Labour Practitioner access</span></label>
+          <label class="opt-label"><input type="radio" name="p_q4" value="email_form" /><div class="radio-dot"></div><span>By emailing the UI-19 form directly to the DOL</span></label>
+          <label class="opt-label"><input type="radio" name="p_q4" value="clients_do" /><div class="radio-dot"></div><span>I advise clients to do it themselves</span></label>
+          <label class="opt-label"><input type="radio" name="p_q4" value="dont_handle" /><div class="radio-dot"></div><span>I don't currently handle UIF declarations</span></label>
+          <label class="opt-label"><input type="radio" name="p_q4" value="other" /><div class="radio-dot"></div><span>Other method</span></label>
+        </div>
+      </div>
+
+      <div class="q-card" data-question="p_q5">
+        <div class="q-num">P5</div>
+        <div class="q-text">Have any of your clients experienced UIF-related penalties, interest charges, or employee benefit claim rejections due to declaration non-compliance?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="p_q5" value="multiple" /><div class="radio-dot"></div><span>Yes — this has happened to multiple clients</span></label>
+          <label class="opt-label"><input type="radio" name="p_q5" value="one" /><div class="radio-dot"></div><span>Yes — at least one client has experienced this</span></label>
+          <label class="opt-label"><input type="radio" name="p_q5" value="not_aware" /><div class="radio-dot"></div><span>Not that I'm aware of</span></label>
+          <label class="opt-label"><input type="radio" name="p_q5" value="no" /><div class="radio-dot"></div><span>No</span></label>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button type="button" class="btn btn-secondary" onclick="prevStep()">← Back</button>
+        <button type="button" class="btn btn-primary" onclick="nextStep()">Continue →</button>
       </div>
     </div>
 
-    <div class="nav-row">
-      <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
-      <button class="btn btn-primary" onclick="nextStep()">Continue →</button>
-    </div>
-  </div>
+    <!-- PRACTITIONER: Step 3 — Value proposition -->
+    <div class="step" id="step-P3">
+      <div class="step-label">Section C · Value &amp; willingness to pay</div>
+      <div class="step-title">Would Fintegris help your practice?</div>
 
-  <!-- EMPLOYER: Step 3 — Risk awareness -->
-  <div class="step" id="step-E3">
-    <div class="step-label">Section C · Risk &amp; awareness</div>
-    <div class="step-title">Are you aware of the risks of non-compliance?</div>
+      <div class="q-card" data-question="p_q6">
+        <div class="q-num">P6</div>
+        <div class="q-text">How many hours per month does UIF declaration work take across all your clients?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="p_q6" value="under_2" /><div class="radio-dot"></div><span>Less than 2 hours</span></label>
+          <label class="opt-label"><input type="radio" name="p_q6" value="2_5" /><div class="radio-dot"></div><span>2–5 hours</span></label>
+          <label class="opt-label"><input type="radio" name="p_q6" value="5_10" /><div class="radio-dot"></div><span>5–10 hours</span></label>
+          <label class="opt-label"><input type="radio" name="p_q6" value="over_10" /><div class="radio-dot"></div><span>More than 10 hours</span></label>
+        </div>
+      </div>
 
-    <div class="q-card">
-      <div class="q-num">Q8</div>
-      <div class="q-text">Have you ever had an employee whose UIF claim (unemployment, maternity, or illness benefit) was rejected or significantly delayed?</div>
-      <div class="options">
-        <label class="opt-label"><input type="radio" name="e_q8" value="yes"><div class="radio-dot"></div><span>Yes — this has happened</span></label>
-        <label class="opt-label"><input type="radio" name="e_q8" value="not_aware"><div class="radio-dot"></div><span>Not that I'm aware of</span></label>
-        <label class="opt-label"><input type="radio" name="e_q8" value="no_claims"><div class="radio-dot"></div><span>I've never had an employee claim UIF</span></label>
+      <div class="q-card" data-question="p_q7">
+        <div class="q-num">P7</div>
+        <div class="q-text">If a platform automated monthly UIF submissions for all your clients — generating bulk-upload files, submitting by the 7th of each month, and giving you confirmation records for every client — would you use it?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="p_q7" value="definitely" /><div class="radio-dot"></div><span>Yes — definitely</span></label>
+          <label class="opt-label"><input type="radio" name="p_q7" value="probably" /><div class="radio-dot"></div><span>Yes — probably</span></label>
+          <label class="opt-label"><input type="radio" name="p_q7" value="unsure" /><div class="radio-dot"></div><span>Not sure</span></label>
+          <label class="opt-label"><input type="radio" name="p_q7" value="probably_not" /><div class="radio-dot"></div><span>Probably not</span></label>
+          <label class="opt-label"><input type="radio" name="p_q7" value="no" /><div class="radio-dot"></div><span>Definitely not</span></label>
+        </div>
+      </div>
+
+      <div class="q-card" data-question="p_q8">
+        <div class="q-num">P8</div>
+        <div class="q-text">What would you be willing to pay per client per month for full UIF submission automation?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="p_q8" value="nothing" /><div class="radio-dot"></div><span>Nothing</span></label>
+          <label class="opt-label"><input type="radio" name="p_q8" value="under_50" /><div class="radio-dot"></div><span>Up to R50/client/month</span></label>
+          <label class="opt-label"><input type="radio" name="p_q8" value="50_100" /><div class="radio-dot"></div><span>R51–R100/client/month</span></label>
+          <label class="opt-label"><input type="radio" name="p_q8" value="100_200" /><div class="radio-dot"></div><span>R101–R200/client/month</span></label>
+          <label class="opt-label"><input type="radio" name="p_q8" value="over_200" /><div class="radio-dot"></div><span>More than R200/client/month</span></label>
+        </div>
+      </div>
+
+      <div class="q-card">
+        <div class="q-num">P9 — Open question</div>
+        <div class="q-text">What is the single biggest challenge you face with UIF compliance for your clients?</div>
+        <div class="textarea-wrap">
+          <textarea id="p_q9" placeholder="Share your thoughts here..."></textarea>
+        </div>
+      </div>
+
+      <div class="q-card" data-question="p_q10">
+        <div class="q-num">P10</div>
+        <div class="q-text">Would you be open to a brief follow-up conversation with the Fintegris team?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="p_q10" value="yes" /><div class="radio-dot"></div><span>Yes — happy to chat</span></label>
+          <label class="opt-label"><input type="radio" name="p_q10" value="maybe" /><div class="radio-dot"></div><span>Maybe — depends on timing</span></label>
+          <label class="opt-label"><input type="radio" name="p_q10" value="no" /><div class="radio-dot"></div><span>No, thank you</span></label>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button type="button" class="btn btn-secondary" onclick="prevStep()">← Back</button>
+        <button type="button" class="btn btn-primary" onclick="submitSurvey()">Submit responses ✓</button>
       </div>
     </div>
 
-    <div class="q-card">
-      <div class="q-num">Q9</div>
-      <div class="q-text">Are you aware that the UIF and SARS are formally collaborating to share employer data — which would automatically identify employers who pay UIF to SARS but don't submit declarations to the DOL?</div>
-      <div class="options">
-        <label class="opt-label"><input type="radio" name="e_q9" value="yes"><div class="radio-dot"></div><span>Yes — I knew about this</span></label>
-        <label class="opt-label"><input type="radio" name="e_q9" value="no"><div class="radio-dot"></div><span>No — I was not aware</span></label>
-        <label class="opt-label"><input type="radio" name="e_q9" value="unsure"><div class="radio-dot"></div><span>I'm not sure what the implications would be</span></label>
+    <!-- Thank you screen -->
+    <div class="thank-you" id="thankYou">
+      <div class="ty-icon" aria-hidden="true">
+        <svg width="32" height="32" viewBox="0 0 24 24">
+          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+        </svg>
+      </div>
+      <h2>Thank you for your response</h2>
+      <p>Your input helps us build a solution that genuinely addresses the UIF compliance challenge for South African SMMEs and practitioners. We'll be in touch if you indicated you'd like a follow-up.</p>
+      <p style="margin-top:8px;font-size:13px;color:#888780">Developed by <strong style="color:#3D3D3A">Didusec (Pty) Ltd</strong> · <a href="https://didusec.co.za">didusec.co.za</a></p>
+      <div class="ty-actions">
+        <button type="button" class="btn btn-primary" onclick="window.print()">Print your responses</button>
+        <button type="button" class="btn btn-secondary" onclick="resetSurvey()">Complete another</button>
       </div>
     </div>
+  </main>
 
-    <div class="nav-row">
-      <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
-      <button class="btn btn-primary" onclick="nextStep()">Continue →</button>
-    </div>
-  </div>
+  <div class="toast-container" id="toastContainer"></div>
 
-  <!-- EMPLOYER: Step 4 — Value proposition -->
-  <div class="step" id="step-E4">
-    <div class="step-label">Section D · Value &amp; willingness to pay</div>
-    <div class="step-title">Would Fintegris solve a problem for you?</div>
+  <footer class="site-footer">
+    <strong>Fintegris</strong> is a product of <strong>Didusec (Pty) Ltd</strong> · <a href="https://didusec.co.za">didusec.co.za</a><br />
+    Survey responses are collected for internal research only and not shared with third parties.
+  </footer>
 
-    <div class="q-card">
-      <div class="q-num">Q11</div>
-      <div class="q-text">How much time do you (or your team/accountant) spend managing UIF declarations per month?</div>
-      <div class="options">
-        <label class="opt-label"><input type="radio" name="e_q11" value="none"><div class="radio-dot"></div><span>We don't do it at all</span></label>
-        <label class="opt-label"><input type="radio" name="e_q11" value="under_1h"><div class="radio-dot"></div><span>Less than 1 hour</span></label>
-        <label class="opt-label"><input type="radio" name="e_q11" value="1_3h"><div class="radio-dot"></div><span>1–3 hours</span></label>
-        <label class="opt-label"><input type="radio" name="e_q11" value="over_3h"><div class="radio-dot"></div><span>More than 3 hours</span></label>
-        <label class="opt-label"><input type="radio" name="e_q11" value="accountant"><div class="radio-dot"></div><span>Handled by accountant — I don't know</span></label>
-      </div>
-    </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script>
+    let currentRole = null;
+    let currentStep = 0;
 
-    <div class="q-card">
-      <div class="q-num">Q12</div>
-      <div class="q-text">If Fintegris automatically submitted your monthly UIF declarations — handling everything by the 7th of the month, sending you DOL confirmation, and reconciling your SARS vs DOL records — how valuable would this be?</div>
-      <div class="options">
-        <label class="opt-label"><input type="radio" name="e_q12" value="extremely"><div class="radio-dot"></div><span>Extremely valuable — this is exactly what I need</span></label>
-        <label class="opt-label"><input type="radio" name="e_q12" value="very"><div class="radio-dot"></div><span>Very valuable</span></label>
-        <label class="opt-label"><input type="radio" name="e_q12" value="somewhat"><div class="radio-dot"></div><span>Somewhat valuable</span></label>
-        <label class="opt-label"><input type="radio" name="e_q12" value="not_valuable"><div class="radio-dot"></div><span>Not valuable</span></label>
-        <label class="opt-label"><input type="radio" name="e_q12" value="already_compliant"><div class="radio-dot"></div><span>I'm already fully compliant — I don't need this</span></label>
-      </div>
-    </div>
+    const employerSteps = ['step-0', 'step-E1', 'step-E2', 'step-E3', 'step-E4'];
+    const practitionerSteps = ['step-0', 'step-P1', 'step-P2', 'step-P3'];
 
-    <div class="q-card">
-      <div class="q-num">Q13</div>
-      <div class="q-text">What would you be willing to pay per month for full UIF declaration automation?</div>
-      <div class="options">
-        <label class="opt-label"><input type="radio" name="e_q13" value="nothing"><div class="radio-dot"></div><span>Nothing — I would do it myself</span></label>
-        <label class="opt-label"><input type="radio" name="e_q13" value="under_299"><div class="radio-dot"></div><span>Up to R299/month</span></label>
-        <label class="opt-label"><input type="radio" name="e_q13" value="300_499"><div class="radio-dot"></div><span>R300 – R499/month</span></label>
-        <label class="opt-label"><input type="radio" name="e_q13" value="500_699"><div class="radio-dot"></div><span>R500 – R699/month</span></label>
-        <label class="opt-label"><input type="radio" name="e_q13" value="700_999"><div class="radio-dot"></div><span>R700 – R999/month</span></label>
-        <label class="opt-label"><input type="radio" name="e_q13" value="over_1000"><div class="radio-dot"></div><span>More than R1,000/month</span></label>
-      </div>
-    </div>
-
-    <div class="q-card">
-      <div class="q-num">Q14 — Open question</div>
-      <div class="q-text">What is the single biggest UIF-related challenge for your business right now?</div>
-      <div class="textarea-wrap">
-        <textarea id="e_q14" placeholder="Share your thoughts here..."></textarea>
-      </div>
-    </div>
-
-    <div class="q-card">
-      <div class="q-num">Q15</div>
-      <div class="q-text">Would you be open to a brief follow-up conversation with the Fintegris team?</div>
-      <div class="options">
-        <label class="opt-label"><input type="radio" name="e_q15" value="yes"><div class="radio-dot"></div><span>Yes — happy to chat</span></label>
-        <label class="opt-label"><input type="radio" name="e_q15" value="maybe"><div class="radio-dot"></div><span>Maybe — depends on timing</span></label>
-        <label class="opt-label"><input type="radio" name="e_q15" value="no"><div class="radio-dot"></div><span>No, thank you</span></label>
-      </div>
-    </div>
-
-    <div class="nav-row">
-      <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
-      <button class="btn btn-primary" onclick="submitSurvey()">Submit responses ✓</button>
-    </div>
-  </div>
-
-  <!-- PRACTITIONER: Step 1 — Contact + practice details -->
-  <div class="step" id="step-P1">
-    <div class="step-label">Section A · About your practice</div>
-    <div class="step-title">Tell us about your accounting practice</div>
-
-    <div class="q-card">
-      <div class="q-num">Contact (optional)</div>
-      <div class="q-text">Your details — for follow-up only, never shared</div>
-      <div class="contact-grid">
-        <div class="field-wrap"><label>Name</label><input type="text" id="p-name" placeholder="Your name"></div>
-        <div class="field-wrap"><label>Firm / practice</label><input type="text" id="p-firm" placeholder="Firm name"></div>
-        <div class="field-wrap"><label>Email</label><input type="email" id="p-email" placeholder="you@firm.co.za"></div>
-        <div class="field-wrap"><label>Phone</label><input type="tel" id="p-phone" placeholder="+27 ..."></div>
-      </div>
-    </div>
-
-    <div class="q-card">
-      <div class="q-num">P1</div>
-      <div class="q-text">How many SMME clients do you currently manage for accounting, payroll, or compliance?</div>
-      <div class="options">
-        <label class="opt-label"><input type="radio" name="p_q1" value="1-10"><div class="radio-dot"></div><span>1–10 clients</span></label>
-        <label class="opt-label"><input type="radio" name="p_q1" value="11-30"><div class="radio-dot"></div><span>11–30 clients</span></label>
-        <label class="opt-label"><input type="radio" name="p_q1" value="31-100"><div class="radio-dot"></div><span>31–100 clients</span></label>
-        <label class="opt-label"><input type="radio" name="p_q1" value="100+"><div class="radio-dot"></div><span>More than 100 clients</span></label>
-      </div>
-    </div>
-
-    <div class="q-card">
-      <div class="q-num">P2</div>
-      <div class="q-text">Are you registered as a Labour Practitioner on uFiling (ufiling.labour.gov.za)?</div>
-      <div class="q-note">The Labour Practitioner model allows accountants to submit UIF declarations on behalf of multiple employer clients.</div>
-      <div class="options">
-        <label class="opt-label"><input type="radio" name="p_q2" value="yes_lp"><div class="radio-dot"></div><span>Yes — I'm a registered Labour Practitioner</span></label>
-        <label class="opt-label"><input type="radio" name="p_q2" value="no_didnt_know"><div class="radio-dot"></div><span>No — I wasn't aware this was possible</span></label>
-        <label class="opt-label"><input type="radio" name="p_q2" value="no_considering"><div class="radio-dot"></div><span>No — but I'm considering registering</span></label>
-      </div>
-    </div>
-
-    <div class="nav-row">
-      <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
-      <button class="btn btn-primary" onclick="nextStep()">Continue →</button>
-    </div>
-  </div>
-
-  <!-- PRACTITIONER: Step 2 — Client compliance -->
-  <div class="step" id="step-P2">
-    <div class="step-label">Section B · Client compliance</div>
-    <div class="step-title">How compliant are your clients with UIF declarations?</div>
-
-    <div class="q-card">
-      <div class="q-num">P3</div>
-      <div class="q-text">What proportion of your SMME clients are currently submitting monthly UI-19 declarations to the Department of Labour?</div>
-      <div class="options">
-        <label class="opt-label"><input type="radio" name="p_q3" value="most"><div class="radio-dot"></div><span>Most or all (over 80%)</span></label>
-        <label class="opt-label"><input type="radio" name="p_q3" value="half"><div class="radio-dot"></div><span>About half (40–80%)</span></label>
-        <label class="opt-label"><input type="radio" name="p_q3" value="some"><div class="radio-dot"></div><span>Some (10–40%)</span></label>
-        <label class="opt-label"><input type="radio" name="p_q3" value="few"><div class="radio-dot"></div><span>Very few or none (under 10%)</span></label>
-        <label class="opt-label"><input type="radio" name="p_q3" value="unsure"><div class="radio-dot"></div><span>I'm not sure</span></label>
-      </div>
-    </div>
-
-    <div class="q-card">
-      <div class="q-num">P4</div>
-      <div class="q-text">How do you currently submit UIF declarations for clients who need them?</div>
-      <div class="options">
-        <label class="opt-label"><input type="radio" name="p_q4" value="ufiling_lp"><div class="radio-dot"></div><span>Via uFiling using my Labour Practitioner access</span></label>
-        <label class="opt-label"><input type="radio" name="p_q4" value="email_form"><div class="radio-dot"></div><span>By emailing the UI-19 form directly to the DOL</span></label>
-        <label class="opt-label"><input type="radio" name="p_q4" value="clients_do"><div class="radio-dot"></div><span>I advise clients to do it themselves</span></label>
-        <label class="opt-label"><input type="radio" name="p_q4" value="dont_handle"><div class="radio-dot"></div><span>I don't currently handle UIF declarations</span></label>
-        <label class="opt-label"><input type="radio" name="p_q4" value="other"><div class="radio-dot"></div><span>Other method</span></label>
-      </div>
-    </div>
-
-    <div class="q-card">
-      <div class="q-num">P5</div>
-      <div class="q-text">Have any of your clients experienced UIF-related penalties, interest charges, or employee benefit claim rejections due to declaration non-compliance?</div>
-      <div class="options">
-        <label class="opt-label"><input type="radio" name="p_q5" value="multiple"><div class="radio-dot"></div><span>Yes — this has happened to multiple clients</span></label>
-        <label class="opt-label"><input type="radio" name="p_q5" value="one"><div class="radio-dot"></div><span>Yes — at least one client has experienced this</span></label>
-        <label class="opt-label"><input type="radio" name="p_q5" value="not_aware"><div class="radio-dot"></div><span>Not that I'm aware of</span></label>
-        <label class="opt-label"><input type="radio" name="p_q5" value="no"><div class="radio-dot"></div><span>No</span></label>
-      </div>
-    </div>
-
-    <div class="nav-row">
-      <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
-      <button class="btn btn-primary" onclick="nextStep()">Continue →</button>
-    </div>
-  </div>
-
-  <!-- PRACTITIONER: Step 3 — Value proposition -->
-  <div class="step" id="step-P3">
-    <div class="step-label">Section C · Value &amp; willingness to pay</div>
-    <div class="step-title">Would Fintegris help your practice?</div>
-
-    <div class="q-card">
-      <div class="q-num">P6</div>
-      <div class="q-text">How many hours per month does UIF declaration work take across all your clients?</div>
-      <div class="options">
-        <label class="opt-label"><input type="radio" name="p_q6" value="under_2"><div class="radio-dot"></div><span>Less than 2 hours</span></label>
-        <label class="opt-label"><input type="radio" name="p_q6" value="2_5"><div class="radio-dot"></div><span>2–5 hours</span></label>
-        <label class="opt-label"><input type="radio" name="p_q6" value="5_10"><div class="radio-dot"></div><span>5–10 hours</span></label>
-        <label class="opt-label"><input type="radio" name="p_q6" value="over_10"><div class="radio-dot"></div><span>More than 10 hours</span></label>
-      </div>
-    </div>
-
-    <div class="q-card">
-      <div class="q-num">P7</div>
-      <div class="q-text">If a platform automated monthly UIF submissions for all your clients — generating bulk-upload files, submitting by the 7th of each month, and giving you confirmation records for every client — would you use it?</div>
-      <div class="options">
-        <label class="opt-label"><input type="radio" name="p_q7" value="definitely"><div class="radio-dot"></div><span>Yes — definitely</span></label>
-        <label class="opt-label"><input type="radio" name="p_q7" value="probably"><div class="radio-dot"></div><span>Yes — probably</span></label>
-        <label class="opt-label"><input type="radio" name="p_q7" value="unsure"><div class="radio-dot"></div><span>Not sure</span></label>
-        <label class="opt-label"><input type="radio" name="p_q7" value="probably_not"><div class="radio-dot"></div><span>Probably not</span></label>
-        <label class="opt-label"><input type="radio" name="p_q7" value="no"><div class="radio-dot"></div><span>Definitely not</span></label>
-      </div>
-    </div>
-
-    <div class="q-card">
-      <div class="q-num">P8</div>
-      <div class="q-text">What would you be willing to pay per client per month for full UIF submission automation?</div>
-      <div class="options">
-        <label class="opt-label"><input type="radio" name="p_q8" value="nothing"><div class="radio-dot"></div><span>Nothing</span></label>
-        <label class="opt-label"><input type="radio" name="p_q8" value="under_50"><div class="radio-dot"></div><span>Up to R50/client/month</span></label>
-        <label class="opt-label"><input type="radio" name="p_q8" value="50_100"><div class="radio-dot"></div><span>R51–R100/client/month</span></label>
-        <label class="opt-label"><input type="radio" name="p_q8" value="100_200"><div class="radio-dot"></div><span>R101–R200/client/month</span></label>
-        <label class="opt-label"><input type="radio" name="p_q8" value="over_200"><div class="radio-dot"></div><span>More than R200/client/month</span></label>
-      </div>
-    </div>
-
-    <div class="q-card">
-      <div class="q-num">P9 — Open question</div>
-      <div class="q-text">What is the single biggest challenge you face with UIF compliance for your clients?</div>
-      <div class="textarea-wrap">
-        <textarea id="p_q9" placeholder="Share your thoughts here..."></textarea>
-      </div>
-    </div>
-
-    <div class="q-card">
-      <div class="q-num">P10</div>
-      <div class="q-text">Would you be open to a brief follow-up conversation with the Fintegris team?</div>
-      <div class="options">
-        <label class="opt-label"><input type="radio" name="p_q10" value="yes"><div class="radio-dot"></div><span>Yes — happy to chat</span></label>
-        <label class="opt-label"><input type="radio" name="p_q10" value="maybe"><div class="radio-dot"></div><span>Maybe — depends on timing</span></label>
-        <label class="opt-label"><input type="radio" name="p_q10" value="no"><div class="radio-dot"></div><span>No, thank you</span></label>
-      </div>
-    </div>
-
-    <div class="nav-row">
-      <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
-      <button class="btn btn-primary" onclick="submitSurvey()">Submit responses ✓</button>
-    </div>
-  </div>
-
-  <!-- Thank you screen -->
-  <div class="thank-you" id="thankYou">
-    <div class="ty-icon">
-      <svg width="32" height="32" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-    </div>
-    <h2>Thank you for your response</h2>
-    <p>Your input helps us build a solution that genuinely addresses the UIF compliance challenge for South African SMMEs and practitioners. We'll be in touch if you indicated you'd like a follow-up.</p>
-    <p style="margin-top:8px;font-size:13px;color:#888780">Developed by <strong style="color:#3D3D3A">Didusec (Pty) Ltd</strong> · <a href="https://didusec.co.za" style="color:#0B5E47">didusec.co.za</a></p>
-    <div class="ty-actions">
-      <button class="btn btn-primary" onclick="window.print()">Print your responses</button>
-      <button class="btn btn-secondary" onclick="resetSurvey()">Complete another</button>
-    </div>
-  </div>
-
-</main>
-
-<div class="toast-container" id="toastContainer"></div>
-
-<footer class="site-footer">
-  <strong>Fintegris</strong> is a product of <strong>Didusec (Pty) Ltd</strong> · <a href="https://didusec.co.za" style="color:var(--teal)">didusec.co.za</a><br>
-  Survey responses are collected for internal research only and not shared with third parties.
-</footer>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script>
-let currentRole = null;
-let currentStep = 0;
-
-const employerSteps = ['step-0','step-E1','step-E2','step-E3','step-E4'];
-const practitionerSteps = ['step-0','step-P1','step-P2','step-P3'];
-
-function selectRole(role) {
-  currentRole = role;
-  document.getElementById('role-employer').classList.toggle('selected', role === 'employer');
-  document.getElementById('role-practitioner').classList.toggle('selected', role === 'practitioner');
-  document.querySelectorAll('input[name="role"]').forEach(r => r.checked = r.value === role);
-  document.getElementById('err-role').classList.remove('show');
-}
-
-function getSteps() {
-  return currentRole === 'practitioner' ? practitionerSteps : employerSteps;
-}
-
-function showStep(n) {
-  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-  const steps = getSteps();
-  if (n < steps.length) {
-    document.getElementById(steps[n]).classList.add('active');
-    const total = steps.length;
-    const pct = Math.round(((n + 1) / total) * 100);
-    document.getElementById('progressFill').style.width = pct + '%';
-    document.getElementById('stepPct').textContent = pct + '%';
-    document.getElementById('stepLabel').textContent = 'Step ' + (n + 1) + ' of ' + total;
-  }
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function showToast(message) {
-  const container = document.getElementById('toastContainer');
-  const toast = document.createElement('div');
-  toast.className = 'toast';
-  toast.textContent = message;
-  container.appendChild(toast);
-  setTimeout(() => {
-    toast.style.animation = 'slideIn 0.3s ease reverse';
-    setTimeout(() => toast.remove(), 300);
-  }, 3000);
-}
-
-function validateCurrentStep() {
-  const steps = getSteps();
-  const currentStepId = steps[currentStep];
-  const stepEl = document.getElementById(currentStepId);
-  if (!stepEl) return true;
-
-  const requiredFields = {
-    'step-0': ['role'],
-    'step-E1': ['e_q1', 'e_q2', 'e_q3'],
-    'step-E2': ['e_q4', 'e_q5', 'e_q6', 'e_q7'],
-    'step-E3': ['e_q8', 'e_q9'],
-    'step-E4': ['e_q11', 'e_q12', 'e_q13', 'e_q15'],
-    'step-P1': ['p_q1', 'p_q2'],
-    'step-P2': ['p_q3', 'p_q4', 'p_q5'],
-    'step-P3': ['p_q6', 'p_q7', 'p_q8', 'p_q10']
-  };
-
-  const fieldsToCheck = requiredFields[currentStepId] || [];
-  const unanswered = [];
-
-  for (const field of fieldsToCheck) {
-    const checked = document.querySelector(`input[name="${field}"]:checked`);
-    if (!checked) {
-      unanswered.push(field);
-    }
-  }
-
-  if (unanswered.length > 0) {
-    showToast(`Please answer all questions before continuing (${unanswered.length} unanswered).`);
-    return false;
-  }
-  return true;
-}
-
-function nextStep() {
-  if (!validateCurrentStep()) {
-    return;
-  }
-  currentStep++;
-  showStep(currentStep);
-}
-
-function prevStep() {
-  if (currentStep > 0) {
-    currentStep--;
-    showStep(currentStep);
-  }
-}
-
-/* ── SUPABASE CONFIG ────────────────────────────────────────────────────────
-   1) Supabase project + run supabase_schema.sql
-   2) Vercel: set NEXT_PUBLIC_SUPABASE_URL + NEXT_PUBLIC_SUPABASE_ANON_KEY (see README)
-      npm run build replaces '__FINTEGRIS_TOKEN_*__' placeholders below.
-   3) Or add meta tags fintegris-supabase-url / fintegris-supabase-anon-key in head.
-   ────────────────────────────────────────────────────────────────────────── */
-const SUPABASE_URL_FALLBACK = '__FINTEGRIS_TOKEN_SUPABASE_URL__';
-const SUPABASE_ANON_KEY_FALLBACK = '__FINTEGRIS_TOKEN_SUPABASE_ANON_KEY__';
-
-function readMeta(name) {
-  const el = document.querySelector(`meta[name="${name}"]`);
-  return (el && el.getAttribute('content') || '').trim();
-}
-
-const SUPABASE_URL = readMeta('fintegris-supabase-url') || SUPABASE_URL_FALLBACK;
-const SUPABASE_ANON_KEY = readMeta('fintegris-supabase-anon-key') || SUPABASE_ANON_KEY_FALLBACK;
-const SURVEY_SCHEMA_VERSION = 2;
-
-function supabaseConfigLooksValid() {
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return false;
-  if (SUPABASE_URL.startsWith('PASTE')) return false;
-  if (SUPABASE_ANON_KEY.startsWith('PASTE')) return false;
-  if (SUPABASE_URL.indexOf('__FINTEGRIS_TOKEN_') !== -1) return false;
-  if (SUPABASE_ANON_KEY.indexOf('__FINTEGRIS_TOKEN_') !== -1) return false;
-  if (!/^https:\/\//i.test(SUPABASE_URL)) return false;
-  return true;
-}
-
-let supabaseClient = null;
-function getSupabaseClient() {
-  if (supabaseClient) return supabaseClient;
-  if (!supabaseConfigLooksValid()) return null;
-  const g = typeof globalThis !== 'undefined' ? globalThis.supabase : null;
-  const create =
-    (g && typeof g.createClient === 'function' && g.createClient) ||
-    (g && g.default && typeof g.default.createClient === 'function' && g.default.createClient);
-  if (!create) {
-    console.error('Fintegris survey: @supabase/supabase-js did not expose createClient.');
-    return null;
-  }
-  supabaseClient = create(SUPABASE_URL, SUPABASE_ANON_KEY);
-  return supabaseClient;
-}
-
-function getRadioValue(name) {
-  const checked = document.querySelector(`input[name="${name}"]:checked`);
-  return checked ? checked.value : '';
-}
-
-function getRadioValue(name) {
-  const checked = document.querySelector(`input[name="${name}"]:checked`);
-  return checked ? checked.value : '';
-}
-
-function pickCodes(names) {
-  const o = {};
-  names.forEach(function (n) {
-    const v = getRadioValue(n);
-    if (v) o[n] = v;
-  });
-  return o;
-}
-
-function getRadioLabel(name) {
-  const checked = document.querySelector(`input[name="${name}"]:checked`);
-  if (!checked) return '';
-  const lbl = checked.closest('.opt-label');
-  return lbl ? (lbl.querySelector('span:last-child') || {}).textContent?.trim() || checked.value : checked.value;
-}
-
-function collectData() {
-  var branch = currentRole === 'practitioner' ? 'practitioner' : 'employer';
-
-  function metaPayload() {
-    return {
-      _meta: {
-        survey_schema_version: SURVEY_SCHEMA_VERSION,
-        branch: branch,
-        captured_at_client: new Date().toISOString()
-      }
-    };
-  }
-
-  if (currentRole === 'employer') {
-    var eRadioNames = [
-      'e_q1', 'e_q2', 'e_q3', 'e_q4', 'e_q5', 'e_q6', 'e_q7', 'e_q8',
-      'e_q9', 'e_q11', 'e_q12', 'e_q13', 'e_q15'
-    ];
-    var roleChoice = getRadioValue('role');
-    return Object.assign({
-      role: 'Employer',
-      name:    document.getElementById('e-name').value.trim(),
-      company: document.getElementById('e-company').value.trim(),
-      email:   document.getElementById('e-email').value.trim(),
-      phone:   document.getElementById('e-phone').value.trim(),
-      role_choice_code: roleChoice || undefined,
-      e_q1:  getRadioLabel('e_q1'),
-      e_q2:  getRadioLabel('e_q2'),
-      e_q3:  getRadioLabel('e_q3'),
-      e_q4:  getRadioLabel('e_q4'),
-      e_q5:  getRadioLabel('e_q5'),
-      e_q6:  getRadioLabel('e_q6'),
-      e_q7:  getRadioLabel('e_q7'),
-      e_q8:  getRadioLabel('e_q8'),
-      e_q9:  getRadioLabel('e_q9'),
-      e_q11: getRadioLabel('e_q11'),
-      e_q12: getRadioLabel('e_q12'),
-      e_q13: getRadioLabel('e_q13'),
-      open:     document.getElementById('e_q14').value.trim(),
-      followup: getRadioLabel('e_q15'),
-      answer_codes: Object.assign(
-        { role: roleChoice },
-        pickCodes(eRadioNames)
-      )
-    }, metaPayload());
-  }
-
-  var pRadioNames = ['p_q1', 'p_q2', 'p_q3', 'p_q4', 'p_q5', 'p_q6', 'p_q7', 'p_q8', 'p_q10'];
-  var prRoleChoice = getRadioValue('role');
-  return Object.assign({
-    role: 'Practitioner',
-    name:    document.getElementById('p-name').value.trim(),
-    company: document.getElementById('p-firm').value.trim(),
-    email:   document.getElementById('p-email').value.trim(),
-    phone:   document.getElementById('p-phone').value.trim(),
-    role_choice_code: prRoleChoice || undefined,
-    p_q1:  getRadioLabel('p_q1'),
-    p_q2:  getRadioLabel('p_q2'),
-    p_q3:  getRadioLabel('p_q3'),
-    p_q4:  getRadioLabel('p_q4'),
-    p_q5:  getRadioLabel('p_q5'),
-    p_q6:  getRadioLabel('p_q6'),
-    p_q7:  getRadioLabel('p_q7'),
-    p_q8:  getRadioLabel('p_q8'),
-    open:     document.getElementById('p_q9').value.trim(),
-    followup: getRadioLabel('p_q10'),
-    answer_codes: Object.assign(
-      { role: prRoleChoice },
-      pickCodes(pRadioNames)
-    )
-  }, metaPayload());
-}
-
-async function submitSurvey() {
-  if (!validateCurrentStep()) {
-    return;
-  }
-  const btn = document.querySelector('.step.active .btn-primary');
-  if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
-
-  try {
-    const sb = getSupabaseClient();
-    if (!sb) {
-      if (btn) { btn.disabled = false; btn.textContent = 'Submit responses ✓'; }
-      alert(
-        'Survey cannot save responses: Supabase URL/key are missing or invalid.\n\n' +
-        'If you deploy on Vercel, set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY and redeploy.\n' +
-        'Open the browser developer console (F12) for details.'
-      );
-      console.warn('Fintegris survey: Supabase not configured — response was NOT saved.');
-      console.table(collectData());
-      return;
-    }
-
-    const payload = collectData();
-
-    var row = {
-      role: payload.role || null,
-      name: payload.name || null,
-      company: payload.company || null,
-      email: payload.email || null,
-      phone: payload.phone || null,
-      source: 'web',
-      survey_schema_version: SURVEY_SCHEMA_VERSION,
-      payload: payload,
-      user_agent: navigator.userAgent || null
+    const requiredByStep = {
+      'step-E1': ['e_q1', 'e_q2', 'e_q3'],
+      'step-E2': ['e_q4', 'e_q5', 'e_q6', 'e_q7'],
+      'step-E3': ['e_q8', 'e_q9'],
+      'step-E4': ['e_q11', 'e_q12', 'e_q13', 'e_q15'],
+      'step-P1': ['p_q1', 'p_q2'],
+      'step-P2': ['p_q3', 'p_q4', 'p_q5'],
+      'step-P3': ['p_q6', 'p_q7', 'p_q8', 'p_q10']
     };
 
-    var res = await sb.from('survey_responses').insert(row);
-
-    if (res.error) {
-      var msg = res.error.message || '';
-
-      if (
-        typeof msg === 'string' &&
-        (msg.indexOf('survey_schema_version') !== -1 ||
-          msg.indexOf('Could not find') !== -1 ||
-          msg.indexOf('schema cache') !== -1 ||
-          msg.indexOf('source') !== -1)
-      ) {
-        var minimal = Object.assign({}, row);
-        delete minimal.source;
-        delete minimal.survey_schema_version;
-        res = await sb.from('survey_responses').insert(minimal);
-      }
-
-      if (res.error) throw res.error;
+    function selectRole(role) {
+      currentRole = role;
+      currentStep = 0;
+      document.getElementById('role-employer').classList.toggle('selected', role === 'employer');
+      document.getElementById('role-practitioner').classList.toggle('selected', role === 'practitioner');
+      document.querySelectorAll('input[name="role"]').forEach(function (r) {
+        r.checked = r.value === role;
+      });
+      document.getElementById('err-role').classList.remove('show');
+      clearInvalidStates();
+      showStep(0, false);
     }
 
-  } catch (err) {
-    console.error('Submission error:', err);
-    if (btn) { btn.disabled = false; btn.textContent = 'Submit responses ✓'; }
-    var detail = '';
-    try {
-      if (err && err.message) detail = String(err.message);
-    } catch (e2) {}
+    function getSteps() {
+      return currentRole === 'practitioner' ? practitionerSteps : employerSteps;
+    }
 
-    alert(
-      'Sorry — there was an error submitting your response. Please try again.' +
-      (detail ? '\n\n' + detail : '')
-    );
-    return;
-  }
+    function showStep(n, scrollToTop) {
+      if (typeof scrollToTop === 'undefined') scrollToTop = true;
+      const steps = getSteps();
+      currentStep = Math.max(0, Math.min(n, steps.length - 1));
 
-  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-  document.getElementById('progressWrap').style.display = 'none';
-  document.getElementById('thankYou').classList.add('active');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+      document.querySelectorAll('.step').forEach(function (s) {
+        s.classList.remove('active');
+      });
 
-function resetSurvey() {
-  currentRole = null;
-  currentStep = 0;
-  document.getElementById('thankYou').classList.remove('active');
-  document.getElementById('progressWrap').style.display = '';
-  document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
-  document.querySelectorAll('textarea').forEach(t => t.value = '');
-  document.getElementById('role-employer').classList.remove('selected');
-  document.getElementById('role-practitioner').classList.remove('selected');
-  showStep(0);
-}
+      const next = document.getElementById(steps[currentStep]);
+      if (next) next.classList.add('active');
 
-document.querySelectorAll('.opt-label input[type="radio"]').forEach(radio => {
-  radio.addEventListener('change', function() {
-    const name = this.name;
-    document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
-      r.closest('.opt-label').classList.toggle('selected', r.checked);
-    });
-  });
-});
+      const total = steps.length;
+      const pct = Math.round(((currentStep + 1) / total) * 100);
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('stepPct').textContent = pct + '%';
+      document.getElementById('stepLabel').textContent = 'Step ' + (currentStep + 1) + ' of ' + total;
 
-showStep(0);
-</script>
+      if (scrollToTop) window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showToast(message, type) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast' + (type === 'success' ? ' success' : '');
+      toast.textContent = message;
+      container.appendChild(toast);
+
+      setTimeout(function () {
+        toast.style.animation = 'slideIn 0.25s ease reverse';
+        setTimeout(function () { toast.remove(); }, 250);
+      }, 3200);
+    }
+
+    function clearInvalidStates() {
+      document.querySelectorAll('.q-card.is-invalid').forEach(function (el) {
+        el.classList.remove('is-invalid');
+      });
+      document.querySelectorAll('input.is-invalid').forEach(function (el) {
+        el.classList.remove('is-invalid');
+      });
+    }
+
+    function markQuestionInvalid(name) {
+      const input = document.querySelector('input[name="' + name + '"]');
+      const card = input ? input.closest('.q-card') : document.querySelector('[data-question="' + name + '"]');
+      if (card) card.classList.add('is-invalid');
+    }
+
+    function scrollToFirstInvalid() {
+      const invalid = document.querySelector('.q-card.is-invalid, input.is-invalid, .val-error.show');
+      if (invalid) invalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function getRadioValue(name) {
+      const checked = document.querySelector('input[name="' + name + '"]:checked');
+      return checked ? checked.value : '';
+    }
+
+    function getRadioLabel(name) {
+      const checked = document.querySelector('input[name="' + name + '"]:checked');
+      if (!checked) return '';
+      const label = checked.closest('.opt-label');
+      const textEl = label ? label.querySelector('span:last-child') : null;
+      return textEl ? textEl.textContent.trim() : checked.value;
+    }
+
+    function pickCodes(names) {
+      const result = {};
+      names.forEach(function (name) {
+        const value = getRadioValue(name);
+        if (value) result[name] = value;
+      });
+      return result;
+    }
+
+    function valueOf(id) {
+      const el = document.getElementById(id);
+      return el ? el.value.trim() : '';
+    }
+
+    function validateEmployerContact() {
+      const contactCard = document.querySelector('[data-question="employer-contact"]');
+      if (contactCard) contactCard.classList.remove('is-invalid');
+
+      const requiredFields = [
+        { id: 'e-name', label: 'Name' },
+        { id: 'e-company', label: 'Company' },
+        { id: 'e-email', label: 'Email' },
+        { id: 'e-phone', label: 'Phone' }
+      ];
+
+      let firstInvalid = null;
+
+      requiredFields.forEach(function (field) {
+        const input = document.getElementById(field.id);
+        if (!input) return;
+        input.classList.remove('is-invalid');
+        if (!input.value.trim()) {
+          input.classList.add('is-invalid');
+          if (!firstInvalid) firstInvalid = { input: input, message: field.label + ' is required.' };
+        }
+      });
+
+      const emailInput = document.getElementById('e-email');
+      const email = emailInput ? emailInput.value.trim() : '';
+      const emailLooksValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      if (email && !emailLooksValid) {
+        emailInput.classList.add('is-invalid');
+        if (!firstInvalid) firstInvalid = { input: emailInput, message: 'Please enter a valid email address.' };
+      }
+
+      const phoneInput = document.getElementById('e-phone');
+      const phoneDigits = phoneInput ? phoneInput.value.replace(/\D/g, '') : '';
+      if (phoneInput && phoneInput.value.trim() && phoneDigits.length < 9) {
+        phoneInput.classList.add('is-invalid');
+        if (!firstInvalid) firstInvalid = { input: phoneInput, message: 'Please enter a valid phone number.' };
+      }
+
+      if (firstInvalid) {
+        if (contactCard) contactCard.classList.add('is-invalid');
+        showToast(firstInvalid.message);
+        firstInvalid.input.focus();
+        scrollToFirstInvalid();
+        return false;
+      }
+
+      return true;
+    }
+
+    function validateCurrentStep() {
+      clearInvalidStates();
+
+      const steps = getSteps();
+      const currentStepId = steps[currentStep];
+      const stepEl = document.getElementById(currentStepId);
+      if (!stepEl) return true;
+
+      if (currentStepId === 'step-0') {
+        if (!currentRole || !getRadioValue('role')) {
+          document.getElementById('err-role').classList.add('show');
+          showToast('Please select who you are before continuing.');
+          scrollToFirstInvalid();
+          return false;
+        }
+        return true;
+      }
+
+      if (currentStepId === 'step-E1' && !validateEmployerContact()) {
+        return false;
+      }
+
+      const fieldsToCheck = requiredByStep[currentStepId] || [];
+      const unanswered = [];
+
+      fieldsToCheck.forEach(function (field) {
+        if (!getRadioValue(field)) {
+          unanswered.push(field);
+          markQuestionInvalid(field);
+        }
+      });
+
+      if (unanswered.length > 0) {
+        showToast('Please answer all questions before continuing (' + unanswered.length + ' unanswered).');
+        scrollToFirstInvalid();
+        return false;
+      }
+
+      return true;
+    }
+
+    function nextStep() {
+      if (!validateCurrentStep()) return;
+      showStep(currentStep + 1);
+    }
+
+    function prevStep() {
+      if (currentStep > 0) showStep(currentStep - 1);
+    }
+
+    /* ── SUPABASE CONFIG ────────────────────────────────────────────────────────
+       1) Create the survey_responses table from supabase_schema.sql.
+       2) Vercel: set NEXT_PUBLIC_SUPABASE_URL + NEXT_PUBLIC_SUPABASE_ANON_KEY.
+          Your build script can replace '__FINTEGRIS_TOKEN_*__' placeholders below.
+       3) Or add meta tags named fintegris-supabase-url / fintegris-supabase-anon-key.
+       ────────────────────────────────────────────────────────────────────────── */
+    const SUPABASE_URL_FALLBACK = '__FINTEGRIS_TOKEN_SUPABASE_URL__';
+    const SUPABASE_ANON_KEY_FALLBACK = '__FINTEGRIS_TOKEN_SUPABASE_ANON_KEY__';
+    const SURVEY_SCHEMA_VERSION = 2;
+
+    function readMeta(name) {
+      const el = document.querySelector('meta[name="' + name + '"]');
+      return (el && el.getAttribute('content') || '').trim();
+    }
+
+    const SUPABASE_URL = readMeta('fintegris-supabase-url') || SUPABASE_URL_FALLBACK;
+    const SUPABASE_ANON_KEY = readMeta('fintegris-supabase-anon-key') || SUPABASE_ANON_KEY_FALLBACK;
+
+    function supabaseConfigLooksValid() {
+      if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return false;
+      if (SUPABASE_URL.indexOf('__FINTEGRIS_TOKEN_') !== -1) return false;
+      if (SUPABASE_ANON_KEY.indexOf('__FINTEGRIS_TOKEN_') !== -1) return false;
+      if (SUPABASE_URL.startsWith('PASTE') || SUPABASE_ANON_KEY.startsWith('PASTE')) return false;
+      if (!/^https:\/\//i.test(SUPABASE_URL)) return false;
+      return true;
+    }
+
+    let supabaseClient = null;
+
+    function getSupabaseClient() {
+      if (supabaseClient) return supabaseClient;
+      if (!supabaseConfigLooksValid()) return null;
+
+      const supabaseGlobal = typeof globalThis !== 'undefined' ? globalThis.supabase : null;
+      const createClient =
+        (supabaseGlobal && typeof supabaseGlobal.createClient === 'function' && supabaseGlobal.createClient) ||
+        (supabaseGlobal && supabaseGlobal.default && typeof supabaseGlobal.default.createClient === 'function' && supabaseGlobal.default.createClient);
+
+      if (!createClient) {
+        console.error('Fintegris survey: @supabase/supabase-js did not expose createClient.');
+        return null;
+      }
+
+      supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      return supabaseClient;
+    }
+
+    function collectData() {
+      const branch = currentRole === 'practitioner' ? 'practitioner' : 'employer';
+      const roleChoice = getRadioValue('role');
+
+      const meta = {
+        _meta: {
+          survey_schema_version: SURVEY_SCHEMA_VERSION,
+          branch: branch,
+          captured_at_client: new Date().toISOString()
+        }
+      };
+
+      if (currentRole === 'employer') {
+        const eRadioNames = [
+          'e_q1', 'e_q2', 'e_q3', 'e_q4', 'e_q5', 'e_q6', 'e_q7', 'e_q8',
+          'e_q9', 'e_q11', 'e_q12', 'e_q13', 'e_q15'
+        ];
+
+        return Object.assign({
+          role: 'Employer',
+          name: valueOf('e-name'),
+          company: valueOf('e-company'),
+          email: valueOf('e-email'),
+          phone: valueOf('e-phone'),
+          role_choice_code: roleChoice || undefined,
+          e_q1: getRadioLabel('e_q1'),
+          e_q2: getRadioLabel('e_q2'),
+          e_q3: getRadioLabel('e_q3'),
+          e_q4: getRadioLabel('e_q4'),
+          e_q5: getRadioLabel('e_q5'),
+          e_q6: getRadioLabel('e_q6'),
+          e_q7: getRadioLabel('e_q7'),
+          e_q8: getRadioLabel('e_q8'),
+          e_q9: getRadioLabel('e_q9'),
+          e_q11: getRadioLabel('e_q11'),
+          e_q12: getRadioLabel('e_q12'),
+          e_q13: getRadioLabel('e_q13'),
+          open: valueOf('e_q14'),
+          followup: getRadioLabel('e_q15'),
+          answer_codes: Object.assign({ role: roleChoice }, pickCodes(eRadioNames))
+        }, meta);
+      }
+
+      const pRadioNames = ['p_q1', 'p_q2', 'p_q3', 'p_q4', 'p_q5', 'p_q6', 'p_q7', 'p_q8', 'p_q10'];
+
+      return Object.assign({
+        role: 'Practitioner',
+        name: valueOf('p-name'),
+        company: valueOf('p-firm'),
+        email: valueOf('p-email'),
+        phone: valueOf('p-phone'),
+        role_choice_code: roleChoice || undefined,
+        p_q1: getRadioLabel('p_q1'),
+        p_q2: getRadioLabel('p_q2'),
+        p_q3: getRadioLabel('p_q3'),
+        p_q4: getRadioLabel('p_q4'),
+        p_q5: getRadioLabel('p_q5'),
+        p_q6: getRadioLabel('p_q6'),
+        p_q7: getRadioLabel('p_q7'),
+        p_q8: getRadioLabel('p_q8'),
+        open: valueOf('p_q9'),
+        followup: getRadioLabel('p_q10'),
+        answer_codes: Object.assign({ role: roleChoice }, pickCodes(pRadioNames))
+      }, meta);
+    }
+
+    async function submitSurvey() {
+      if (!validateCurrentStep()) return;
+
+      // Extra guard: if an employer somehow jumps steps, contact details still stay required.
+      if (currentRole === 'employer' && !validateEmployerContact()) return;
+
+      const btn = document.querySelector('.step.active .btn-primary');
+      const originalText = btn ? btn.textContent : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Submitting…';
+      }
+
+      try {
+        const sb = getSupabaseClient();
+        const payload = collectData();
+
+        if (!sb) {
+          console.warn('Fintegris survey: Supabase not configured — response was NOT saved.');
+          console.table(payload);
+          showToast('Supabase is not configured, so this response was not saved.');
+          alert(
+            'Survey cannot save responses: Supabase URL/key are missing or invalid.\n\n' +
+            'If you deploy on Vercel, set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY and redeploy.\n' +
+            'Open the browser developer console (F12) for details.'
+          );
+          return;
+        }
+
+        const row = {
+          role: payload.role || null,
+          name: payload.name || null,
+          company: payload.company || null,
+          email: payload.email || null,
+          phone: payload.phone || null,
+          source: 'web',
+          survey_schema_version: SURVEY_SCHEMA_VERSION,
+          payload: payload,
+          user_agent: navigator.userAgent || null
+        };
+
+        let res = await sb.from('survey_responses').insert(row);
+
+        // Compatibility fallback for older tables that do not yet have source/survey_schema_version.
+        if (res.error) {
+          const msg = res.error.message || '';
+          const looksLikeSchemaMismatch =
+            msg.indexOf('survey_schema_version') !== -1 ||
+            msg.indexOf('Could not find') !== -1 ||
+            msg.indexOf('schema cache') !== -1 ||
+            msg.indexOf('source') !== -1;
+
+          if (looksLikeSchemaMismatch) {
+            const minimal = Object.assign({}, row);
+            delete minimal.source;
+            delete minimal.survey_schema_version;
+            res = await sb.from('survey_responses').insert(minimal);
+          }
+
+          if (res.error) throw res.error;
+        }
+
+        showToast('Response submitted successfully.', 'success');
+        document.querySelectorAll('.step').forEach(function (s) { s.classList.remove('active'); });
+        document.getElementById('progressWrap').style.display = 'none';
+        document.getElementById('thankYou').classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (err) {
+        console.error('Submission error:', err);
+        const detail = err && err.message ? String(err.message) : '';
+        alert('Sorry — there was an error submitting your response. Please try again.' + (detail ? '\n\n' + detail : ''));
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = originalText || 'Submit responses ✓';
+        }
+      }
+    }
+
+    function resetSurvey() {
+      currentRole = null;
+      currentStep = 0;
+      clearInvalidStates();
+      document.getElementById('thankYou').classList.remove('active');
+      document.getElementById('progressWrap').style.display = '';
+      document.querySelectorAll('input[type="radio"]').forEach(function (r) { r.checked = false; });
+      document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], textarea').forEach(function (el) { el.value = ''; });
+      document.querySelectorAll('.opt-label.selected, .role-card.selected').forEach(function (el) { el.classList.remove('selected'); });
+      document.getElementById('err-role').classList.remove('show');
+      showStep(0);
+    }
+
+    function wireEvents() {
+      document.getElementById('role-employer').addEventListener('click', function () { selectRole('employer'); });
+      document.getElementById('role-practitioner').addEventListener('click', function () { selectRole('practitioner'); });
+
+      document.querySelectorAll('.opt-label input[type="radio"]').forEach(function (radio) {
+        radio.addEventListener('change', function () {
+          const name = this.name;
+          document.querySelectorAll('input[name="' + name + '"]').forEach(function (r) {
+            const label = r.closest('.opt-label');
+            if (label) label.classList.toggle('selected', r.checked);
+          });
+          const card = this.closest('.q-card');
+          if (card) card.classList.remove('is-invalid');
+        });
+      });
+
+      document.querySelectorAll('#e-name, #e-company, #e-email, #e-phone').forEach(function (input) {
+        input.addEventListener('input', function () {
+          input.classList.remove('is-invalid');
+          const contactCard = document.querySelector('[data-question="employer-contact"]');
+          if (contactCard) contactCard.classList.remove('is-invalid');
+        });
+      });
+    }
+
+    wireEvents();
+    showStep(0, false);
+  </script>
 </body>
 </html>
