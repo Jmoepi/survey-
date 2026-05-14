@@ -3,535 +3,996 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CompliSA — Survey Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <title>CompliSA - Survey Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
   <style>
     :root {
-      --teal:#0B5E47; --teal-mid:#1D9E75; --teal-light:#E1F5EE; --rule:#D8D6CF;
-      --ink:#1A1A18; --ink2:#3D3D3A; --ink3:#6B6B67; --bg:#FAFAF8; --white:#FFFFFF;
-      --red:#B92B2B; --red-light:#FBEAEA;
+      --teal:#0B5E47;
+      --teal-2:#0F7A5A;
+      --teal-mid:#1D9E75;
+      --teal-soft:#E1F5EE;
+      --mint:#F1FBF6;
+      --cream:#FAFAF8;
+      --paper:#FFFFFF;
+      --line:#D8D6CF;
+      --line-soft:#ECE9E2;
+      --ink:#161714;
+      --ink-2:#3D3D3A;
+      --ink-3:#6B6B67;
+      --danger:#B92B2B;
+      --danger-soft:#FBEAEA;
+      --warn:#8A6100;
+      --warn-soft:#FFF4D9;
+      --shadow:0 24px 80px rgba(12, 48, 38, .12);
+      --radius:22px;
     }
+
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;min-height:100vh}
-    header{background:var(--teal);color:#fff;padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
-    header h1{font-family:'DM Serif Display',serif;font-weight:400;font-size:20px}
-    header .meta{font-size:12px;opacity:.85}
-    main{max-width:1100px;margin:0 auto;padding:22px 18px 50px}
-    .card{background:#fff;border:1px solid var(--rule);border-radius:12px;padding:16px 16px;margin-bottom:14px}
-    .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-    .row > *{flex:1}
-    .btn{padding:10px 14px;border-radius:10px;border:1px solid var(--rule);background:#fff;color:var(--ink2);cursor:pointer;font-weight:500}
-    .btn.primary{background:var(--teal);border-color:var(--teal);color:#fff}
-    .btn:disabled{opacity:.5;cursor:not-allowed}
-    input{width:100%;padding:10px 12px;border:1px solid var(--rule);border-radius:10px;font:inherit}
-    input:focus{outline:none;border-color:var(--teal-mid)}
-    .hint{font-size:12px;color:var(--ink3);margin-top:6px}
-    .error{display:none;margin-top:10px;background:var(--red-light);color:var(--red);border-left:3px solid var(--red);padding:10px 12px;border-radius:10px;font-size:13px}
-    .error.show{display:block}
-    .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-    .stat{background:var(--teal-light);border:1px solid rgba(11,94,71,.18);border-radius:12px;padding:12px 12px}
-    .stat .k{font-size:12px;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em}
-    .stat .v{font-size:22px;font-weight:500;color:var(--ink);margin-top:4px}
-    .tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
-    .table-wrap{overflow:auto;border:1px solid var(--rule);border-radius:12px}
-    table{border-collapse:separate;border-spacing:0;width:100%;min-width:980px;background:#fff}
-    th,td{padding:10px 10px;border-bottom:1px solid var(--rule);vertical-align:top}
-    th{position:sticky;top:0;background:#fff;font-size:12px;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;text-align:left}
-    tr:hover td{background:#fafbf9}
-    .pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--rule);padding:3px 8px;border-radius:999px;font-size:12px;color:var(--ink2);white-space:nowrap}
-    .pill.employer{border-color:rgba(11,94,71,.35);background:rgba(11,94,71,.06)}
-    .pill.practitioner{border-color:rgba(29,158,117,.4);background:rgba(29,158,117,.08)}
-    .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-size:12px;color:var(--ink2)}
-    details{border:1px solid var(--rule);border-radius:10px;padding:8px 10px;background:#fff}
-    details > summary{cursor:pointer;font-weight:500;color:var(--teal);font-size:13px;list-style:none}
-    details > summary::-webkit-details-marker{display:none}
-    .kv{margin-top:10px;display:grid;grid-template-columns:180px 1fr;gap:6px 10px}
-    .kv .k{font-size:12px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em}
-    .kv .v{font-size:13px;color:var(--ink);white-space:pre-wrap}
-    .muted{color:var(--ink3)}
-    @media (max-width:900px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:'DM Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(29,158,117,.18), transparent 30%),
+        radial-gradient(circle at top right, rgba(11,94,71,.16), transparent 28%),
+        var(--cream);
+      color:var(--ink);
+      min-height:100vh;
+      line-height:1.5;
+    }
+
+    button,input,select{font:inherit}
+    button{cursor:pointer}
+    a{color:inherit}
+
+    .app-shell{min-height:100vh;display:flex;flex-direction:column}
+    .topbar{
+      position:sticky;top:0;z-index:20;
+      backdrop-filter:blur(18px);
+      background:rgba(250,250,248,.86);
+      border-bottom:1px solid rgba(216,214,207,.7);
+    }
+    .topbar-inner{
+      max-width:1280px;margin:0 auto;padding:16px 18px;
+      display:flex;align-items:center;justify-content:space-between;gap:16px;
+    }
+    .brand{display:flex;align-items:center;gap:12px;min-width:0}
+    .brand-mark{
+      width:42px;height:42px;border-radius:14px;
+      background:linear-gradient(135deg,var(--teal),var(--teal-mid));
+      box-shadow:0 10px 30px rgba(11,94,71,.25);
+      display:grid;place-items:center;color:#fff;font-weight:800;letter-spacing:-.05em;
+    }
+    .brand h1{font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;line-height:1.05;white-space:nowrap}
+    .brand p{font-size:12px;color:var(--ink-3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .status-pill{
+      display:inline-flex;align-items:center;gap:8px;
+      border:1px solid var(--line);background:rgba(255,255,255,.65);
+      color:var(--ink-2);border-radius:999px;padding:8px 12px;font-size:13px;white-space:nowrap;
+    }
+    .dot{width:8px;height:8px;border-radius:999px;background:var(--ink-3);box-shadow:0 0 0 4px rgba(107,107,103,.1)}
+    .dot.ok{background:var(--teal-mid);box-shadow:0 0 0 4px rgba(29,158,117,.15)}
+    .dot.warn{background:#D19500;box-shadow:0 0 0 4px rgba(209,149,0,.14)}
+    .top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+
+    main{width:100%;max-width:1280px;margin:0 auto;padding:24px 18px 52px;flex:1}
+
+    .login-layout{display:grid;grid-template-columns:minmax(0,1.06fr) minmax(360px,.94fr);gap:22px;align-items:stretch;margin-top:16px}
+    .hero-card,.login-card,.card{
+      background:rgba(255,255,255,.86);
+      border:1px solid rgba(216,214,207,.78);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+    .hero-card{padding:34px;position:relative;overflow:hidden;min-height:560px;display:flex;flex-direction:column;justify-content:space-between}
+    .hero-card:before{
+      content:'';position:absolute;inset:auto -80px -150px auto;width:360px;height:360px;border-radius:999px;
+      background:radial-gradient(circle, rgba(29,158,117,.28), transparent 66%);
+      pointer-events:none;
+    }
+    .eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.14em;color:var(--teal);font-weight:700;margin-bottom:12px}
+    .hero-card h2{font-family:'DM Serif Display',serif;font-weight:400;font-size:clamp(38px,5vw,72px);line-height:.92;letter-spacing:-.035em;max-width:780px}
+    .hero-card .lead{font-size:17px;color:var(--ink-2);margin-top:18px;max-width:640px}
+    .mini-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:28px;position:relative;z-index:1}
+    .mini-card{background:rgba(241,251,246,.84);border:1px solid rgba(11,94,71,.12);border-radius:18px;padding:16px}
+    .mini-card strong{display:block;font-size:26px;color:var(--teal);line-height:1}
+    .mini-card span{display:block;margin-top:8px;font-size:13px;color:var(--ink-3)}
+    .security-note{margin-top:26px;padding:16px;border-radius:18px;background:rgba(255,255,255,.72);border:1px solid var(--line-soft);color:var(--ink-2);font-size:14px;position:relative;z-index:1}
+
+    .login-card{padding:24px;align-self:stretch}
+    .login-card h3,.card-title{font-family:'DM Serif Display',serif;font-weight:400;font-size:26px;line-height:1.1}
+    .subcopy{font-size:14px;color:var(--ink-3);margin-top:8px}
+    .field{margin-top:14px}
+    .field label{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13px;color:var(--ink-2);font-weight:700;margin-bottom:7px}
+    .input,.select{
+      width:100%;border:1px solid var(--line);background:#fff;border-radius:14px;padding:12px 13px;color:var(--ink);
+      transition:border-color .2s, box-shadow .2s, background .2s;
+    }
+    .input:focus,.select:focus{outline:none;border-color:var(--teal-mid);box-shadow:0 0 0 4px rgba(29,158,117,.12)}
+    .input::placeholder{color:#9D9A93}
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);
+      border-radius:14px;background:#fff;color:var(--ink-2);padding:11px 14px;font-weight:700;min-height:42px;
+      transition:transform .15s, box-shadow .15s, background .15s, border-color .15s;
+    }
+    .btn:hover{transform:translateY(-1px);box-shadow:0 10px 30px rgba(22,23,20,.08)}
+    .btn.primary{background:linear-gradient(135deg,var(--teal),var(--teal-2));border-color:var(--teal);color:#fff}
+    .btn.ghost{background:transparent}
+    .btn.small{min-height:36px;padding:8px 11px;border-radius:12px;font-size:13px}
+    .btn:disabled{opacity:.55;cursor:not-allowed;transform:none;box-shadow:none}
+    .full{width:100%}
+    .split{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .actions-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:16px}
+    .hint{font-size:12px;color:var(--ink-3)}
+    .error,.notice{
+      display:none;margin-top:14px;border-radius:16px;padding:12px 14px;font-size:13px;line-height:1.45;
+    }
+    .error.show{display:block;background:var(--danger-soft);color:var(--danger);border:1px solid rgba(185,43,43,.22)}
+    .notice.show{display:block;background:var(--warn-soft);color:var(--warn);border:1px solid rgba(138,97,0,.2)}
+    details.config{margin-top:18px;border:1px solid var(--line-soft);border-radius:18px;padding:14px;background:rgba(250,250,248,.7)}
+    details.config summary{cursor:pointer;font-weight:800;color:var(--teal);list-style:none}
+    details.config summary::-webkit-details-marker{display:none}
+
+    .dashboard{display:none}
+    .dashboard.show{display:block}
+    .toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px;flex-wrap:wrap}
+    .toolbar h2{font-family:'DM Serif Display',serif;font-weight:400;font-size:36px;line-height:1}
+    .toolbar p{color:var(--ink-3);margin-top:6px;font-size:14px}
+
+    .grid{display:grid;gap:14px}
+    .kpi-grid{grid-template-columns:repeat(5,minmax(0,1fr));margin-bottom:14px}
+    .card{padding:18px;box-shadow:none;background:rgba(255,255,255,.92)}
+    .kpi{position:relative;overflow:hidden;min-height:126px}
+    .kpi:after{content:'';position:absolute;right:-28px;bottom:-44px;width:120px;height:120px;background:var(--teal-soft);border-radius:999px;opacity:.8}
+    .kpi .label{font-size:12px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-weight:800;position:relative;z-index:1}
+    .kpi .value{font-size:34px;line-height:1.05;margin-top:12px;font-weight:800;letter-spacing:-.05em;position:relative;z-index:1}
+    .kpi .meta{font-size:12px;color:var(--ink-3);margin-top:8px;position:relative;z-index:1}
+
+    .filters{display:grid;grid-template-columns:1.2fr .8fr .8fr .8fr auto;gap:10px;align-items:end;margin-bottom:14px}
+    .section-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}
+    .section-head h3{font-family:'DM Serif Display',serif;font-weight:400;font-size:24px;line-height:1}
+    .section-head p{font-size:13px;color:var(--ink-3);margin-top:5px}
+    .chart-grid{grid-template-columns:1fr 1fr;margin-bottom:14px}
+    .chart-card{min-height:360px}
+    .chart-box{position:relative;height:270px;width:100%}
+    .insights-grid{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:14px}
+    .insight{background:linear-gradient(180deg,#fff,var(--mint));border:1px solid rgba(11,94,71,.12);border-radius:18px;padding:16px}
+    .insight strong{display:block;font-size:19px;letter-spacing:-.02em;color:var(--teal);line-height:1.15}
+    .insight span{display:block;font-size:12px;color:var(--ink-3);margin-top:8px}
+
+    .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:18px;background:#fff;max-height:620px}
+    table{border-collapse:separate;border-spacing:0;width:100%;min-width:1100px;background:#fff}
+    th,td{padding:12px;border-bottom:1px solid var(--line-soft);vertical-align:top;text-align:left}
+    th{position:sticky;top:0;z-index:5;background:#fff;font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.11em;font-weight:900}
+    tr:hover td{background:#FBFCF9}
+    .pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);padding:4px 9px;border-radius:999px;font-size:12px;font-weight:800;color:var(--ink-2);white-space:nowrap;background:#fff}
+    .pill.employer{border-color:rgba(11,94,71,.28);background:rgba(11,94,71,.07);color:var(--teal)}
+    .pill.practitioner{border-color:rgba(29,158,117,.35);background:rgba(29,158,117,.09);color:#137657}
+    .pill.other{background:#f4f3ef}
+    .contact-lines{font-size:13px;color:var(--ink-2)}
+    .contact-lines strong{font-size:14px;color:var(--ink);display:block;margin-bottom:2px}
+    .muted{color:var(--ink-3)}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono','Courier New',monospace;font-size:12px;color:var(--ink-2)}
+    details.answers{border:1px solid var(--line-soft);border-radius:14px;padding:9px 10px;background:#fff;max-width:620px}
+    details.answers summary{cursor:pointer;font-weight:800;color:var(--teal);font-size:13px;list-style:none}
+    details.answers summary::-webkit-details-marker{display:none}
+    .kv{margin-top:12px;display:grid;grid-template-columns:190px 1fr;gap:7px 12px}
+    .kv .k{font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:900}
+    .kv .v{font-size:13px;color:var(--ink);white-space:pre-wrap;word-break:break-word}
+    .empty{padding:42px 18px;text-align:center;color:var(--ink-3)}
+    .empty strong{display:block;color:var(--ink);font-size:18px;margin-bottom:6px}
+
+    @media (max-width:1100px){
+      .login-layout{grid-template-columns:1fr}
+      .hero-card{min-height:auto}
+      .kpi-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+      .chart-grid{grid-template-columns:1fr}
+      .insights-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .filters{grid-template-columns:1fr 1fr}
+    }
+    @media (max-width:720px){
+      .topbar-inner{align-items:flex-start;flex-direction:column}
+      .top-actions{width:100%;justify-content:space-between}
+      .brand h1{font-size:19px}
+      .hero-card,.login-card,.card{border-radius:18px;padding:18px}
+      .mini-grid,.split,.kpi-grid,.insights-grid,.filters{grid-template-columns:1fr}
+      .toolbar h2{font-size:30px}
+      .status-pill{width:100%;justify-content:center}
+      .btn{width:100%}
+      .actions-row .btn{width:auto;flex:1}
+    }
   </style>
 </head>
 <body>
-  <header>
-    <div>
-      <h1>CompliSA — Survey Dashboard</h1>
-      <div class="meta" id="statusLine">Not connected</div>
-    </div>
-    <div class="row" style="max-width:460px;flex:0 0 auto;">
-      <button class="btn" id="logoutBtn" style="display:none;">Log out</button>
-    </div>
-  </header>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <div class="brand-mark">C</div>
+          <div>
+            <h1>CompliSA Survey Dashboard</h1>
+            <p>Secure responses, live analytics, and export-ready data.</p>
+          </div>
+        </div>
+        <div class="top-actions">
+          <span class="status-pill"><span class="dot warn" id="statusDot"></span><span id="statusLine">Not connected</span></span>
+          <button class="btn small ghost" id="logoutBtn" style="display:none">Log out</button>
+        </div>
+      </div>
+    </header>
 
-  <main>
-    <div class="card" id="configCard">
-      <div style="font-family:'DM Serif Display',serif;font-size:18px;margin-bottom:10px">Configuration</div>
-      <div class="hint">Paste the same Supabase Project URL and anon key used in the survey file.</div>
-      <div class="row" style="margin-top:12px">
-        <div>
-          <div class="hint" style="margin-bottom:6px">Supabase Project URL</div>
-          <input id="sbUrl" placeholder="https://xxxx.supabase.co" />
+    <main>
+      <section id="loginView" class="login-layout">
+        <div class="hero-card">
+          <div>
+            <div class="eyebrow">Admin intelligence room</div>
+            <h2>See every survey signal without digging through database dust.</h2>
+            <p class="lead">Log in with your allowlisted Supabase admin account to review responses, track employer versus practitioner patterns, spot adoption opportunities, and export clean data for reporting.</p>
+            <div class="mini-grid">
+              <div class="mini-card"><strong id="previewTotal">--</strong><span>Total responses loaded after login</span></div>
+              <div class="mini-card"><strong>RLS</strong><span>Dashboard reads only when user is allowlisted</span></div>
+              <div class="mini-card"><strong>CSV</strong><span>Export-ready for Excel, reporting, and investor packs</span></div>
+            </div>
+          </div>
+          <div class="security-note">
+            <strong>Security setup:</strong> the dashboard expects a Supabase Auth user whose UUID exists in <span class="mono">public.dashboard_admins</span>. Without that allowlist, Row Level Security should return no response rows.
+          </div>
         </div>
-        <div>
-          <div class="hint" style="margin-bottom:6px">Supabase anon key</div>
-          <input id="sbAnon" placeholder="eyJhbGciOi..." />
-        </div>
-      </div>
-      <div class="row" style="margin-top:12px">
-        <button class="btn primary" id="saveConfigBtn">Save config</button>
-        <div class="hint">Stored locally in your browser only.</div>
-      </div>
-    </div>
 
-    <div class="card" id="authCard">
-      <div style="font-family:'DM Serif Display',serif;font-size:18px;margin-bottom:10px">Admin login</div>
-      <div class="hint">Use a Supabase user that is in the `dashboard_admins` allowlist (see `supabase_schema.sql`).</div>
-      <div class="row" style="margin-top:12px">
-        <div>
-          <div class="hint" style="margin-bottom:6px">Email</div>
-          <input id="email" type="email" placeholder="admin@yourdomain.com" />
-        </div>
-        <div>
-          <div class="hint" style="margin-bottom:6px">Password</div>
-          <input id="password" type="password" placeholder="••••••••" />
-        </div>
-      </div>
-      <div class="row" style="margin-top:12px">
-        <button class="btn primary" id="loginBtn">Log in</button>
-        <div class="hint">If you haven't created an admin user yet, create one in Supabase Auth.</div>
-      </div>
-      <div class="error" id="authError"></div>
-    </div>
+        <div class="login-card">
+          <h3>Admin login</h3>
+          <p class="subcopy">Use your Supabase email and password. This page does not create admin users.</p>
 
-    <div class="card" id="statsCard" style="display:none">
-      <div id="adminBanner" class="hint" style="display:none;background:#fdf0dc;border:1px solid #e8c170;color:#5c4a1f;padding:12px 14px;border-radius:10px;margin-bottom:14px;line-height:1.55;font-size:13px"></div>
-      <div class="tools">
-        <div style="font-family:'DM Serif Display',serif;font-size:18px">Live overview</div>
-        <div class="row" style="flex:0 0 auto;gap:10px">
-          <button class="btn" id="exportCsvBtn">Export CSV</button>
-          <button class="btn" id="exportXlsxBtn">Export Excel</button>
-          <button class="btn" id="refreshBtn">Refresh</button>
-        </div>
-      </div>
-      <hr style="border:none;border-top:1px solid var(--rule);margin:14px 0">
-      <div class="stats">
-        <div class="stat"><div class="k">Total responses</div><div class="v" id="statTotal">0</div></div>
-        <div class="stat"><div class="k">Employers</div><div class="v" id="statEmployers">0</div></div>
-        <div class="stat"><div class="k">Practitioners</div><div class="v" id="statPractitioners">0</div></div>
-        <div class="stat"><div class="k">Last response</div><div class="v" style="font-size:14px;margin-top:8px" id="statLast">—</div></div>
-      </div>
-    </div>
+          <div class="field">
+            <label for="email">Email address</label>
+            <input class="input" id="email" type="email" autocomplete="email" placeholder="admin@yourdomain.com" />
+          </div>
+          <div class="field">
+            <label for="password">Password</label>
+            <input class="input" id="password" type="password" autocomplete="current-password" placeholder="Enter password" />
+          </div>
+          <div class="actions-row">
+            <button class="btn primary full" id="loginBtn">Log in to dashboard</button>
+          </div>
+          <div class="error" id="authError"></div>
 
-    <div class="card" id="tableCard" style="display:none">
-      <div style="font-family:'DM Serif Display',serif;font-size:18px;margin-bottom:10px">Responses</div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Created</th>
-              <th>Role</th>
-              <th>Contact</th>
-              <th>All answers</th>
-            </tr>
-          </thead>
-          <tbody id="tbody"></tbody>
-        </table>
-      </div>
-      <div class="hint" style="margin-top:10px">Live updates require Realtime enabled for `survey_responses`.</div>
-    </div>
-  </main>
+          <details class="config" id="configDetails">
+            <summary>Supabase connection settings</summary>
+            <p class="subcopy">For production, set these through Vercel env injection. For local testing, paste them here. Values are stored only in this browser.</p>
+            <div class="field">
+              <label for="sbUrl">Supabase Project URL</label>
+              <input class="input" id="sbUrl" placeholder="https://xxxx.supabase.co" />
+            </div>
+            <div class="field">
+              <label for="sbAnon">Supabase anon key</label>
+              <input class="input" id="sbAnon" placeholder="eyJhbGciOi..." />
+            </div>
+            <div class="actions-row">
+              <button class="btn primary" id="saveConfigBtn">Save config</button>
+              <button class="btn" id="clearConfigBtn">Clear</button>
+            </div>
+            <div class="hint" style="margin-top:10px">Tip: use the same project URL and anon key as your public survey form.</div>
+          </details>
+        </div>
+      </section>
+
+      <section id="dashboardView" class="dashboard">
+        <div class="toolbar">
+          <div>
+            <h2>Live overview</h2>
+            <p id="dashboardSubcopy">Response analytics will appear once data is loaded.</p>
+          </div>
+          <div class="actions-row" style="margin-top:0">
+            <button class="btn" id="exportCsvBtn">Export CSV</button>
+            <button class="btn" id="exportXlsxBtn">Export Excel</button>
+            <button class="btn primary" id="refreshBtn">Refresh</button>
+          </div>
+        </div>
+
+        <div class="notice" id="adminBanner"></div>
+        <div class="error" id="dashboardError"></div>
+
+        <div class="grid kpi-grid">
+          <div class="card kpi"><div class="label">Total responses</div><div class="value" id="statTotal">0</div><div class="meta" id="statTotalMeta">Loaded rows</div></div>
+          <div class="card kpi"><div class="label">Employers</div><div class="value" id="statEmployers">0</div><div class="meta" id="statEmployersMeta">0% of filtered</div></div>
+          <div class="card kpi"><div class="label">Practitioners</div><div class="value" id="statPractitioners">0</div><div class="meta" id="statPractitionersMeta">0% of filtered</div></div>
+          <div class="card kpi"><div class="label">Follow-up leads</div><div class="value" id="statFollowups">0</div><div class="meta" id="statFollowupsMeta">People open to contact</div></div>
+          <div class="card kpi"><div class="label">Last response</div><div class="value" id="statLast" style="font-size:17px;line-height:1.25;margin-top:16px">-</div><div class="meta">Newest submission</div></div>
+        </div>
+
+        <div class="card">
+          <div class="section-head">
+            <div>
+              <h3>Filters</h3>
+              <p>Search by name, company, email, phone, role, or any answer inside the JSON payload.</p>
+            </div>
+            <button class="btn small" id="resetFiltersBtn">Reset filters</button>
+          </div>
+          <div class="filters">
+            <div class="field" style="margin-top:0">
+              <label for="searchInput">Search</label>
+              <input class="input" id="searchInput" placeholder="Search responses..." />
+            </div>
+            <div class="field" style="margin-top:0">
+              <label for="roleFilter">Role</label>
+              <select class="select" id="roleFilter">
+                <option value="all">All roles</option>
+                <option value="Employer">Employers</option>
+                <option value="Practitioner">Practitioners</option>
+                <option value="other">Other or blank</option>
+              </select>
+            </div>
+            <div class="field" style="margin-top:0">
+              <label for="dateFrom">From</label>
+              <input class="input" id="dateFrom" type="date" />
+            </div>
+            <div class="field" style="margin-top:0">
+              <label for="dateTo">To</label>
+              <input class="input" id="dateTo" type="date" />
+            </div>
+            <button class="btn primary" id="applyFiltersBtn">Apply</button>
+          </div>
+        </div>
+
+        <div class="grid insights-grid" id="insightsGrid">
+          <div class="insight"><strong id="insightContactRate">0%</strong><span>Contact capture rate</span></div>
+          <div class="insight"><strong id="insightTopProvince">-</strong><span>Top employer province</span></div>
+          <div class="insight"><strong id="insightAutomation">0</strong><span>High automation value responses</span></div>
+          <div class="insight"><strong id="insightRecent">0</strong><span>Responses in the last 7 days</span></div>
+        </div>
+
+        <div class="grid chart-grid">
+          <div class="card chart-card">
+            <div class="section-head">
+              <div><h3>Role split</h3><p>Employer versus practitioner survey responses.</p></div>
+            </div>
+            <div class="chart-box"><canvas id="roleChart"></canvas></div>
+          </div>
+          <div class="card chart-card">
+            <div class="section-head">
+              <div><h3>Responses over time</h3><p>Daily submissions for the last 14 days.</p></div>
+            </div>
+            <div class="chart-box"><canvas id="trendChart"></canvas></div>
+          </div>
+          <div class="card chart-card">
+            <div class="section-head">
+              <div><h3>Top provinces</h3><p>Employer location signal from <span class="mono">e_q2</span>.</p></div>
+            </div>
+            <div class="chart-box"><canvas id="provinceChart"></canvas></div>
+          </div>
+          <div class="card chart-card">
+            <div class="section-head">
+              <div><h3>Willingness to pay</h3><p>Combined signal from <span class="mono">e_q13</span> and <span class="mono">p_q8</span>.</p></div>
+            </div>
+            <div class="chart-box"><canvas id="payChart"></canvas></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-head">
+            <div>
+              <h3>Responses</h3>
+              <p id="tableMeta">No responses loaded yet.</p>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Created</th>
+                  <th>Role</th>
+                  <th>Contact</th>
+                  <th>Key signals</th>
+                  <th>All answers</th>
+                </tr>
+              </thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+          <div class="hint" style="margin-top:10px">Realtime works when Supabase Realtime is enabled for <span class="mono">survey_responses</span>. Refresh still works even without Realtime.</div>
+        </div>
+      </section>
+    </main>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <script>
     const LS_URL = 'complisa_sb_url';
     const LS_ANON = 'complisa_sb_anon';
 
-    /* Replaced at deploy by scripts/inject-env.js when Vercel env vars are set */
+    // These tokens can be replaced by scripts/inject-env.js during deployment.
     const DEPLOY_SUPABASE_URL = '__COMPLISA_TOKEN_SUPABASE_URL__';
     const DEPLOY_SUPABASE_ANON_KEY = '__COMPLISA_TOKEN_SUPABASE_ANON_KEY__';
 
-    function deployOrEmpty(v) {
-      if (!v || String(v).indexOf('__COMPLISA_TOKEN_') !== -1) return '';
-      return String(v).trim();
-    }
+    const ANSWER_LABELS = {
+      role: 'Role', name: 'Name', company: 'Company/Firm', email: 'Email', phone: 'Phone', open: 'Open response', followup: 'Follow-up?',
+      e_q1: 'Employer Q1 - Number of employees', e_q2: 'Employer Q2 - Province', e_q3: 'Employer Q3 - Registered PAYE/UIF', e_q4: 'Employer Q4 - Heard of uFiling', e_q5: 'Employer Q5 - Registered on uFiling', e_q6: 'Employer Q6 - SARS vs DOL awareness', e_q7: 'Employer Q7 - UI-19 handling', e_q8: 'Employer Q8 - Claim rejected/delayed', e_q9: 'Employer Q9 - SARS/UIF data sharing awareness', e_q10:'Employer Q10 - Compliance certificate proposal', e_q11:'Employer Q11 - Time per month', e_q12:'Employer Q12 - Value of automation', e_q13:'Employer Q13 - Willingness to pay',
+      p_q1: 'Practitioner Q1 - Number of clients', p_q2: 'Practitioner Q2 - Labour Practitioner registered', p_q3: 'Practitioner Q3 - Client compliance proportion', p_q4: 'Practitioner Q4 - Submission method', p_q5: 'Practitioner Q5 - Penalties or claim issues seen', p_q6: 'Practitioner Q6 - Hours per month', p_q7: 'Practitioner Q7 - Would use platform', p_q8: 'Practitioner Q8 - Willingness to pay'
+    };
+
+    const ANSWER_ORDER = [
+      'role','name','company','email','phone',
+      'e_q1','e_q2','e_q3','e_q4','e_q5','e_q6','e_q7','e_q8','e_q9','e_q10','e_q11','e_q12','e_q13',
+      'p_q1','p_q2','p_q3','p_q4','p_q5','p_q6','p_q7','p_q8',
+      'open','followup'
+    ];
 
     const els = {
-      statusLine: document.getElementById('statusLine'),
-      configCard: document.getElementById('configCard'),
-      sbUrl: document.getElementById('sbUrl'),
-      sbAnon: document.getElementById('sbAnon'),
-      saveConfigBtn: document.getElementById('saveConfigBtn'),
-      authCard: document.getElementById('authCard'),
-      email: document.getElementById('email'),
-      password: document.getElementById('password'),
-      loginBtn: document.getElementById('loginBtn'),
-      logoutBtn: document.getElementById('logoutBtn'),
-      authError: document.getElementById('authError'),
-      statsCard: document.getElementById('statsCard'),
-      tableCard: document.getElementById('tableCard'),
-      statTotal: document.getElementById('statTotal'),
-      statEmployers: document.getElementById('statEmployers'),
-      statPractitioners: document.getElementById('statPractitioners'),
-      statLast: document.getElementById('statLast'),
-      tbody: document.getElementById('tbody'),
-      exportCsvBtn: document.getElementById('exportCsvBtn'),
-      exportXlsxBtn: document.getElementById('exportXlsxBtn'),
-      refreshBtn: document.getElementById('refreshBtn'),
-      adminBanner: document.getElementById('adminBanner'),
+      loginView: document.getElementById('loginView'), dashboardView: document.getElementById('dashboardView'),
+      statusLine: document.getElementById('statusLine'), statusDot: document.getElementById('statusDot'),
+      sbUrl: document.getElementById('sbUrl'), sbAnon: document.getElementById('sbAnon'), configDetails: document.getElementById('configDetails'),
+      saveConfigBtn: document.getElementById('saveConfigBtn'), clearConfigBtn: document.getElementById('clearConfigBtn'),
+      email: document.getElementById('email'), password: document.getElementById('password'), loginBtn: document.getElementById('loginBtn'), logoutBtn: document.getElementById('logoutBtn'),
+      authError: document.getElementById('authError'), dashboardError: document.getElementById('dashboardError'), adminBanner: document.getElementById('adminBanner'),
+      dashboardSubcopy: document.getElementById('dashboardSubcopy'), previewTotal: document.getElementById('previewTotal'),
+      statTotal: document.getElementById('statTotal'), statEmployers: document.getElementById('statEmployers'), statPractitioners: document.getElementById('statPractitioners'), statFollowups: document.getElementById('statFollowups'), statLast: document.getElementById('statLast'),
+      statTotalMeta: document.getElementById('statTotalMeta'), statEmployersMeta: document.getElementById('statEmployersMeta'), statPractitionersMeta: document.getElementById('statPractitionersMeta'), statFollowupsMeta: document.getElementById('statFollowupsMeta'),
+      insightContactRate: document.getElementById('insightContactRate'), insightTopProvince: document.getElementById('insightTopProvince'), insightAutomation: document.getElementById('insightAutomation'), insightRecent: document.getElementById('insightRecent'),
+      searchInput: document.getElementById('searchInput'), roleFilter: document.getElementById('roleFilter'), dateFrom: document.getElementById('dateFrom'), dateTo: document.getElementById('dateTo'), applyFiltersBtn: document.getElementById('applyFiltersBtn'), resetFiltersBtn: document.getElementById('resetFiltersBtn'),
+      tbody: document.getElementById('tbody'), tableMeta: document.getElementById('tableMeta'),
+      exportCsvBtn: document.getElementById('exportCsvBtn'), exportXlsxBtn: document.getElementById('exportXlsxBtn'), refreshBtn: document.getElementById('refreshBtn')
     };
 
     let supabaseClient = null;
     let realtimeChannel = null;
     let rowsCache = [];
+    let filteredRows = [];
+    let totalAvailableCount = 0;
+    let charts = {};
 
-    function setStatus(msg){ els.statusLine.textContent = msg; }
-    function showError(msg){
-      els.authError.textContent = msg || '';
-      els.authError.classList.toggle('show', !!msg);
+    function deployOrEmpty(value) {
+      if (!value || String(value).includes('__COMPLISA_TOKEN_')) return '';
+      return String(value).trim();
     }
 
-    function loadConfig(){
-      var u = localStorage.getItem(LS_URL) || '';
-      var a = localStorage.getItem(LS_ANON) || '';
-      if (!u) u = deployOrEmpty(DEPLOY_SUPABASE_URL);
-      if (!a) a = deployOrEmpty(DEPLOY_SUPABASE_ANON_KEY);
-      els.sbUrl.value = u;
-      els.sbAnon.value = a;
+    function getConfig() {
+      let url = (localStorage.getItem(LS_URL) || '').trim() || deployOrEmpty(DEPLOY_SUPABASE_URL);
+      let anon = (localStorage.getItem(LS_ANON) || '').trim() || deployOrEmpty(DEPLOY_SUPABASE_ANON_KEY);
+      return { url, anon };
     }
 
-    function saveConfig(){
+    function loadConfig() {
+      const { url, anon } = getConfig();
+      els.sbUrl.value = url;
+      els.sbAnon.value = anon;
+      if (!url || !anon) els.configDetails.open = true;
+    }
+
+    function saveConfig() {
       localStorage.setItem(LS_URL, (els.sbUrl.value || '').trim());
       localStorage.setItem(LS_ANON, (els.sbAnon.value || '').trim());
     }
 
-    function ensureClient(){
-      let url = (localStorage.getItem(LS_URL) || '').trim();
-      let anon = (localStorage.getItem(LS_ANON) || '').trim();
-      if (!url) url = deployOrEmpty(DEPLOY_SUPABASE_URL);
-      if (!anon) anon = deployOrEmpty(DEPLOY_SUPABASE_ANON_KEY);
+    function clearConfig() {
+      localStorage.removeItem(LS_URL);
+      localStorage.removeItem(LS_ANON);
+      els.sbUrl.value = '';
+      els.sbAnon.value = '';
+      supabaseClient = null;
+    }
+
+    function ensureClient() {
+      const { url, anon } = getConfig();
       if (!url || !anon) return null;
-      supabaseClient = window.supabase.createClient(url, anon);
+      supabaseClient = window.supabase.createClient(url, anon, {
+        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+      });
       return supabaseClient;
     }
 
-    function formatDate(iso){
-      try {
-        const d = new Date(iso);
-        return d.toLocaleString();
-      } catch { return iso || ''; }
+    function setStatus(message, type = 'warn') {
+      els.statusLine.textContent = message;
+      els.statusDot.classList.remove('ok','warn');
+      if (type === 'ok') els.statusDot.classList.add('ok');
+      else if (type === 'warn') els.statusDot.classList.add('warn');
     }
 
-    function rolePill(role){
-      const r = (role || '').toLowerCase();
-      const cls = r.includes('pract') ? 'practitioner' : 'employer';
-      return `<span class="pill ${cls}">${role || '—'}</span>`;
+    function showError(target, message) {
+      target.textContent = message || '';
+      target.classList.toggle('show', Boolean(message));
     }
 
-    function safe(v){ return (v === null || v === undefined) ? '' : String(v); }
+    function showNotice(message) {
+      els.adminBanner.innerHTML = message || '';
+      els.adminBanner.classList.toggle('show', Boolean(message));
+    }
 
-    function escapeHtml(s){
-      return String(s)
+    function escapeHtml(value) {
+      return String(value ?? '')
         .replaceAll('&','&amp;')
         .replaceAll('<','&lt;')
         .replaceAll('>','&gt;')
         .replaceAll('"','&quot;')
-        .replaceAll("'","&#039;");
+        .replaceAll("'",'&#039;');
     }
 
-    function labelForKey(key){
-      const map = {
-        role: 'Role',
-        name: 'Name',
-        company: 'Company/Firm',
-        email: 'Email',
-        phone: 'Phone',
-        open: 'Open response',
-        followup: 'Follow-up?',
-        e_q1: 'Q1 Employees',
-        e_q2: 'Q2 Province',
-        e_q3: 'Q3 Registered PAYE/UIF',
-        e_q4: 'Q4 Heard of uFiling',
-        e_q5: 'Q5 Registered on uFiling',
-        e_q6: 'Q6 SARS vs DOL awareness',
-        e_q7: 'Q7 UI-19 handling',
-        e_q8: 'Q8 Claim rejected/delayed',
-        e_q9: 'Q9 SARS/UIF data sharing awareness',
-        e_q10:'Q10 Compliance certificate proposal',
-        e_q11:'Q11 Time per month',
-        e_q12:'Q12 Value of automation',
-        e_q13:'Q13 Willingness to pay',
-        p_q1: 'P1 # Clients',
-        p_q2: 'P2 Labour Practitioner registered',
-        p_q3: 'P3 Client compliance proportion',
-        p_q4: 'P4 Submission method',
-        p_q5: 'P5 Penalties/claim issues seen',
-        p_q6: 'P6 Hours per month',
-        p_q7: 'P7 Would use platform',
-        p_q8: 'P8 Willingness to pay',
-      };
-      return map[key] || key;
+    function toSafeText(value, fallback = '') {
+      if (value === null || value === undefined) return fallback;
+      const text = String(value).trim();
+      return text || fallback;
     }
 
-    function allAnswersDetails(row){
-      const p = row.payload || {};
-
-      // Show keys in a stable, friendly order, then include any extras that may appear later.
-      const baseKeys = [
-        'role','name','company','email','phone',
-        'e_q1','e_q2','e_q3','e_q4','e_q5','e_q6','e_q7','e_q8','e_q9','e_q10','e_q11','e_q12','e_q13',
-        'p_q1','p_q2','p_q3','p_q4','p_q5','p_q6','p_q7','p_q8',
-        'open','followup'
-      ];
-
-      const allKeys = Array.from(new Set([
-        ...baseKeys,
-        ...Object.keys(p || {})
-      ]));
-
-      const kvRows = allKeys.map(k => {
-        const raw = p?.[k];
-        const val = (raw === undefined || raw === null || raw === '') ? '' : String(raw);
-        return `
-          <div class="k">${escapeHtml(labelForKey(k))}</div>
-          <div class="v">${val ? escapeHtml(val) : '<span class="muted">—</span>'}</div>
-        `;
-      }).join('');
-
-      return `
-        <details>
-          <summary>View all answers</summary>
-          <div class="kv">${kvRows}</div>
-        </details>
-      `;
+    function normalizeRole(value) {
+      const role = toSafeText(value);
+      if (/employer/i.test(role)) return 'Employer';
+      if (/practitioner/i.test(role)) return 'Practitioner';
+      return role || 'Other';
     }
 
-    function renderTable(){
-      els.tbody.innerHTML = rowsCache.map(r => {
-        const contact = [r.name, r.company, r.email, r.phone].filter(Boolean).join('<br>');
-        return `
-          <tr>
-            <td>${formatDate(r.created_at)}</td>
-            <td>${rolePill(r.role)}</td>
-            <td>${contact || '<span class="hint">Anonymous</span>'}</td>
-            <td>${allAnswersDetails(r)}</td>
-          </tr>
-        `;
-      }).join('');
+    function getPayload(row) {
+      return row?.payload && typeof row.payload === 'object' ? row.payload : {};
     }
 
-    function updateStats(){
-      const total = rowsCache.length;
-      const employers = rowsCache.filter(r => (r.role || '').toLowerCase().includes('employer')).length;
-      const practitioners = rowsCache.filter(r => (r.role || '').toLowerCase().includes('practitioner')).length;
-      const last = rowsCache[0]?.created_at ? formatDate(rowsCache[0].created_at) : '—';
-      els.statTotal.textContent = total;
-      els.statEmployers.textContent = employers;
-      els.statPractitioners.textContent = practitioners;
-      els.statLast.textContent = last;
+    function getField(row, field) {
+      const p = getPayload(row);
+      return toSafeText(row?.[field]) || toSafeText(p[field]);
     }
 
-    function flattenForExport(r){
-      const p = r.payload || {};
+    function normalizeRow(row) {
+      const p = getPayload(row);
       return {
-        id: r.id,
-        created_at: r.created_at,
-        role: r.role,
-        name: r.name,
-        company: r.company,
-        email: r.email,
-        phone: r.phone,
-        payload_json: JSON.stringify(p),
-        open: p.open || '',
-        followup: p.followup || '',
-        ...p
+        ...row,
+        payload: p,
+        role: normalizeRole(row.role || p.role),
+        name: getField(row, 'name'),
+        company: getField(row, 'company'),
+        email: getField(row, 'email'),
+        phone: getField(row, 'phone'),
+        created_at: row.created_at,
+        searchable: JSON.stringify({ ...row, ...p }).toLowerCase()
       };
     }
 
-    function downloadBlob(filename, blob){
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
+    function formatDateTime(iso) {
+      if (!iso) return '-';
+      const date = new Date(iso);
+      if (Number.isNaN(date.getTime())) return iso;
+      return date.toLocaleString(undefined, { year:'numeric', month:'short', day:'2-digit', hour:'2-digit', minute:'2-digit' });
     }
 
-    function exportCsv(){
-      const data = rowsCache.map(flattenForExport);
-      const cols = Array.from(new Set(data.flatMap(o => Object.keys(o))));
-      const esc = (v) => {
-        const s = (v === null || v === undefined) ? '' : String(v);
-        return /[",\n]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s;
-      };
-      const lines = [
-        cols.map(esc).join(','),
-        ...data.map(row => cols.map(c => esc(row[c])).join(','))
-      ];
-      downloadBlob(`complisa_survey_${new Date().toISOString().slice(0,10)}.csv`, new Blob([lines.join('\n')], {type:'text/csv;charset=utf-8'}));
+    function isoDay(date) {
+      const d = new Date(date);
+      d.setHours(0,0,0,0);
+      return d.toISOString().slice(0,10);
     }
 
-    function exportXlsx(){
-      const data = rowsCache.map(flattenForExport);
-      const ws = XLSX.utils.json_to_sheet(data);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'responses');
-      XLSX.writeFile(wb, `complisa_survey_${new Date().toISOString().slice(0,10)}.xlsx`);
+    function percent(part, total) {
+      if (!total) return '0%';
+      return Math.round((part / total) * 100) + '%';
     }
 
-    async function loadRows(){
-      setStatus('Loading responses…');
-      const { data, error } = await supabaseClient
-        .from('survey_responses')
-        .select('id, created_at, role, name, company, email, phone, payload')
-        .order('created_at', { ascending: false })
-        .limit(1000);
-      if (error) throw error;
-      rowsCache = data || [];
-      renderTable();
-      updateStats();
-      setStatus(`Connected · showing ${rowsCache.length} responses`);
+    function rolePill(role) {
+      const normalized = normalizeRole(role);
+      const cls = normalized === 'Employer' ? 'employer' : normalized === 'Practitioner' ? 'practitioner' : 'other';
+      return `<span class="pill ${cls}">${escapeHtml(normalized)}</span>`;
     }
 
-    /** RLS only allows SELECT if auth.uid() is in dashboard_admins — otherwise data is []. */
-    async function checkDashboardAllowlisted(){
-      const { data: { session } } = await supabaseClient.auth.getSession();
+    function frequency(rows, getter) {
+      const counts = new Map();
+      rows.forEach(row => {
+        const value = toSafeText(getter(row), 'Unanswered');
+        counts.set(value, (counts.get(value) || 0) + 1);
+      });
+      return Array.from(counts.entries()).sort((a,b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+    }
+
+    function topN(entries, n = 6) {
+      return entries.slice(0,n);
+    }
+
+    function includesPositive(value) {
+      return /yes|yebo|true|interested|follow|contact|call|email|agree|willing/i.test(toSafeText(value));
+    }
+
+    function includesHighAutomationValue(value) {
+      return /high|very|essential|valuable|strong|yes|definitely|great/i.test(toSafeText(value));
+    }
+
+    function showAuthedUI() {
+      els.loginView.style.display = 'none';
+      els.dashboardView.classList.add('show');
+      els.logoutBtn.style.display = '';
+    }
+
+    function showLoggedOutUI() {
+      els.loginView.style.display = '';
+      els.dashboardView.classList.remove('show');
+      els.logoutBtn.style.display = 'none';
+      showNotice('');
+      showError(els.dashboardError, '');
+    }
+
+    async function checkDashboardAllowlisted() {
+      const { data: sessionResult } = await supabaseClient.auth.getSession();
+      const session = sessionResult?.session;
       if (!session) return false;
+
       const { data, error } = await supabaseClient
         .from('dashboard_admins')
         .select('user_id')
         .eq('user_id', session.user.id)
         .maybeSingle();
+
       if (error) {
-        els.adminBanner.style.display = 'block';
-        els.adminBanner.innerHTML =
-          '<strong>Could not verify admin access.</strong> ' + escapeHtml(error.message);
+        showNotice(`<strong>Admin check failed.</strong> ${escapeHtml(error.message)}. Check the RLS policy on <span class="mono">dashboard_admins</span>.`);
         return false;
       }
+
       if (!data) {
-        els.adminBanner.style.display = 'block';
-        els.adminBanner.innerHTML =
-          '<strong>Your login is not allowlisted to read responses.</strong> In Supabase SQL Editor run ' +
-          '<code>insert into public.dashboard_admins (user_id) values (\'…your auth user uuid…\');</code> ' +
-          '(see README). Until then, Row Level Security returns no rows even if submissions exist.';
+        showNotice(`<strong>This login is not allowlisted.</strong> Add this Supabase Auth user UUID to <span class="mono">public.dashboard_admins</span>. Until then, <span class="mono">survey_responses</span> should return zero rows.`);
         return false;
       }
-      els.adminBanner.style.display = 'none';
-      els.adminBanner.innerHTML = '';
+
+      showNotice('');
       return true;
     }
 
-    async function loadDashboardData(){
-      const ok = await checkDashboardAllowlisted();
-      if (!ok) {
+    async function loadRows() {
+      setStatus('Loading responses...', 'warn');
+      showError(els.dashboardError, '');
+
+      const { data, error, count } = await supabaseClient
+        .from('survey_responses')
+        .select('id, created_at, role, name, company, email, phone, payload, user_agent, source, survey_schema_version', { count: 'exact' })
+        .order('created_at', { ascending: false })
+        .limit(5000);
+
+      if (error) throw error;
+      totalAvailableCount = count ?? (data || []).length;
+      rowsCache = (data || []).map(normalizeRow);
+      els.previewTotal.textContent = String(totalAvailableCount);
+      applyFilters();
+      setStatus(`Connected - ${rowsCache.length} response${rowsCache.length === 1 ? '' : 's'} loaded`, 'ok');
+    }
+
+    async function loadDashboardData() {
+      showAuthedUI();
+      const allowed = await checkDashboardAllowlisted();
+      if (!allowed) {
         rowsCache = [];
-        renderTable();
-        updateStats();
-        setStatus('Logged in · fix allowlist to load responses');
+        totalAvailableCount = 0;
+        applyFilters();
+        setStatus('Logged in - allowlist required', 'warn');
         return;
       }
       await loadRows();
       await attachRealtime();
     }
 
-    function showAuthedUI(){
-      els.statsCard.style.display = '';
-      els.tableCard.style.display = '';
-      els.logoutBtn.style.display = '';
-      els.authCard.style.display = 'none';
+    function applyFilters() {
+      const q = (els.searchInput.value || '').trim().toLowerCase();
+      const role = els.roleFilter.value;
+      const from = els.dateFrom.value ? new Date(els.dateFrom.value + 'T00:00:00') : null;
+      const to = els.dateTo.value ? new Date(els.dateTo.value + 'T23:59:59') : null;
+
+      filteredRows = rowsCache.filter(row => {
+        const created = row.created_at ? new Date(row.created_at) : null;
+        if (q && !row.searchable.includes(q)) return false;
+        if (role === 'Employer' && row.role !== 'Employer') return false;
+        if (role === 'Practitioner' && row.role !== 'Practitioner') return false;
+        if (role === 'other' && (row.role === 'Employer' || row.role === 'Practitioner')) return false;
+        if (from && created && created < from) return false;
+        if (to && created && created > to) return false;
+        return true;
+      });
+
+      renderAll();
     }
 
-    function showLoggedOutUI(){
-      els.statsCard.style.display = 'none';
-      els.tableCard.style.display = 'none';
-      els.logoutBtn.style.display = 'none';
-      els.authCard.style.display = '';
-      if (els.adminBanner) { els.adminBanner.style.display = 'none'; els.adminBanner.innerHTML = ''; }
+    function resetFilters() {
+      els.searchInput.value = '';
+      els.roleFilter.value = 'all';
+      els.dateFrom.value = '';
+      els.dateTo.value = '';
+      applyFilters();
     }
 
-    async function attachRealtime(){
+    function updateStats() {
+      const total = filteredRows.length;
+      const employers = filteredRows.filter(row => row.role === 'Employer').length;
+      const practitioners = filteredRows.filter(row => row.role === 'Practitioner').length;
+      const followups = filteredRows.filter(row => includesPositive(row.payload.followup) || includesPositive(row.payload.open)).length;
+      const last = rowsCache[0]?.created_at ? formatDateTime(rowsCache[0].created_at) : '-';
+
+      els.statTotal.textContent = String(total);
+      els.statEmployers.textContent = String(employers);
+      els.statPractitioners.textContent = String(practitioners);
+      els.statFollowups.textContent = String(followups);
+      els.statLast.textContent = last;
+      els.statTotalMeta.textContent = `${rowsCache.length} loaded from ${totalAvailableCount || rowsCache.length} available`;
+      els.statEmployersMeta.textContent = `${percent(employers,total)} of filtered`;
+      els.statPractitionersMeta.textContent = `${percent(practitioners,total)} of filtered`;
+      els.statFollowupsMeta.textContent = `${percent(followups,total)} of filtered`;
+      els.dashboardSubcopy.textContent = `${total} filtered response${total === 1 ? '' : 's'} shown from ${rowsCache.length} loaded row${rowsCache.length === 1 ? '' : 's'}.`;
+      els.tableMeta.textContent = `${total} filtered response${total === 1 ? '' : 's'} shown. Newest first.`;
+    }
+
+    function updateInsights() {
+      const total = filteredRows.length;
+      const contacts = filteredRows.filter(row => row.email || row.phone).length;
+      const provinces = frequency(filteredRows.filter(row => row.role === 'Employer'), row => row.payload.e_q2);
+      const automationHigh = filteredRows.filter(row => includesHighAutomationValue(row.payload.e_q12) || includesHighAutomationValue(row.payload.p_q7)).length;
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - 7);
+      const recent = filteredRows.filter(row => row.created_at && new Date(row.created_at) >= cutoff).length;
+
+      els.insightContactRate.textContent = percent(contacts, total);
+      els.insightTopProvince.textContent = provinces[0] ? provinces[0][0] : '-';
+      els.insightAutomation.textContent = String(automationHigh);
+      els.insightRecent.textContent = String(recent);
+    }
+
+    function renderTable() {
+      if (!filteredRows.length) {
+        els.tbody.innerHTML = `<tr><td colspan="5"><div class="empty"><strong>No responses found</strong><span>Try clearing filters, refreshing, or checking the Supabase allowlist/RLS setup.</span></div></td></tr>`;
+        return;
+      }
+
+      els.tbody.innerHTML = filteredRows.map(row => {
+        const p = row.payload || {};
+        const contact = [
+          row.name ? `<strong>${escapeHtml(row.name)}</strong>` : '',
+          row.company ? escapeHtml(row.company) : '',
+          row.email ? `<span>${escapeHtml(row.email)}</span>` : '',
+          row.phone ? `<span>${escapeHtml(row.phone)}</span>` : ''
+        ].filter(Boolean).join('<br>') || '<span class="muted">Anonymous</span>';
+
+        const keySignals = row.role === 'Employer'
+          ? [p.e_q2 && `Province: ${p.e_q2}`, p.e_q5 && `uFiling: ${p.e_q5}`, p.e_q12 && `Automation: ${p.e_q12}`, p.e_q13 && `Pay: ${p.e_q13}`]
+          : [p.p_q1 && `Clients: ${p.p_q1}`, p.p_q4 && `Submission: ${p.p_q4}`, p.p_q7 && `Use platform: ${p.p_q7}`, p.p_q8 && `Pay: ${p.p_q8}`];
+
+        return `
+          <tr>
+            <td>${escapeHtml(formatDateTime(row.created_at))}<br><span class="mono">${escapeHtml(row.id || '')}</span></td>
+            <td>${rolePill(row.role)}</td>
+            <td><div class="contact-lines">${contact}</div></td>
+            <td>${keySignals.filter(Boolean).map(v => `<span class="pill">${escapeHtml(v)}</span>`).join(' ') || '<span class="muted">No key signals</span>'}</td>
+            <td>${answersDetails(row)}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function answersDetails(row) {
+      const p = row.payload || {};
+      const keys = Array.from(new Set([...ANSWER_ORDER, ...Object.keys(p)]));
+      const rows = keys.map(key => {
+        const value = p[key] ?? (['role','name','company','email','phone'].includes(key) ? row[key] : undefined);
+        const clean = toSafeText(value);
+        return `
+          <div class="k">${escapeHtml(ANSWER_LABELS[key] || key)}</div>
+          <div class="v">${clean ? escapeHtml(clean) : '<span class="muted">-</span>'}</div>
+        `;
+      }).join('');
+
+      const metadata = `
+        <div class="k">Source</div><div class="v">${escapeHtml(row.source || 'web')}</div>
+        <div class="k">Schema version</div><div class="v">${escapeHtml(row.survey_schema_version || '')}</div>
+        <div class="k">User agent</div><div class="v">${escapeHtml(row.user_agent || '')}</div>
+      `;
+
+      return `<details class="answers"><summary>View all answers</summary><div class="kv">${rows}${metadata}</div></details>`;
+    }
+
+    function createOrUpdateChart(key, canvasId, config) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas || typeof Chart === 'undefined') return;
+      if (charts[key]) charts[key].destroy();
+      charts[key] = new Chart(canvas, config);
+    }
+
+    function baseChartOptions(extra = {}) {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { boxWidth: 12, usePointStyle: true } },
+          tooltip: { callbacks: { label: ctx => `${ctx.label || ctx.dataset.label}: ${ctx.raw}` } }
+        },
+        ...extra
+      };
+    }
+
+    function renderCharts() {
+      const employers = filteredRows.filter(row => row.role === 'Employer').length;
+      const practitioners = filteredRows.filter(row => row.role === 'Practitioner').length;
+      const other = filteredRows.length - employers - practitioners;
+
+      createOrUpdateChart('role', 'roleChart', {
+        type: 'doughnut',
+        data: { labels: ['Employers','Practitioners','Other'], datasets: [{ data: [employers, practitioners, other] }] },
+        options: baseChartOptions({ cutout: '62%' })
+      });
+
+      const dayBuckets = [];
+      for (let i = 13; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        dayBuckets.push(isoDay(d));
+      }
+      const dayCounts = Object.fromEntries(dayBuckets.map(day => [day, 0]));
+      filteredRows.forEach(row => {
+        if (!row.created_at) return;
+        const day = isoDay(row.created_at);
+        if (day in dayCounts) dayCounts[day] += 1;
+      });
+      createOrUpdateChart('trend', 'trendChart', {
+        type: 'line',
+        data: { labels: dayBuckets.map(day => day.slice(5)), datasets: [{ label:'Responses', data: dayBuckets.map(day => dayCounts[day]), tension:.35, fill:true }] },
+        options: baseChartOptions({ scales: { y: { beginAtZero:true, ticks:{ precision:0 } } } })
+      });
+
+      const provinces = topN(frequency(filteredRows.filter(row => row.role === 'Employer'), row => row.payload.e_q2), 6);
+      createOrUpdateChart('province', 'provinceChart', {
+        type: 'bar',
+        data: { labels: provinces.map(([label]) => label), datasets: [{ label:'Responses', data: provinces.map(([,count]) => count) }] },
+        options: baseChartOptions({ indexAxis:'y', scales: { x: { beginAtZero:true, ticks:{ precision:0 } } }, plugins:{ legend:{ display:false } } })
+      });
+
+      const payEntries = topN(frequency(filteredRows, row => row.role === 'Employer' ? row.payload.e_q13 : row.payload.p_q8), 6);
+      createOrUpdateChart('pay', 'payChart', {
+        type: 'bar',
+        data: { labels: payEntries.map(([label]) => label), datasets: [{ label:'Responses', data: payEntries.map(([,count]) => count) }] },
+        options: baseChartOptions({ indexAxis:'y', scales: { x: { beginAtZero:true, ticks:{ precision:0 } } }, plugins:{ legend:{ display:false } } })
+      });
+    }
+
+    function renderAll() {
+      updateStats();
+      updateInsights();
+      renderTable();
+      renderCharts();
+    }
+
+    function flattenForExport(row) {
+      const p = row.payload || {};
+      return {
+        id: row.id,
+        created_at: row.created_at,
+        role: row.role,
+        name: row.name,
+        company: row.company,
+        email: row.email,
+        phone: row.phone,
+        source: row.source || 'web',
+        survey_schema_version: row.survey_schema_version || '',
+        user_agent: row.user_agent || '',
+        ...p,
+        payload_json: JSON.stringify(p)
+      };
+    }
+
+    function downloadBlob(filename, blob) {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function exportCsv() {
+      const data = filteredRows.map(flattenForExport);
+      if (!data.length) return showError(els.dashboardError, 'No filtered rows to export.');
+      const columns = Array.from(new Set(data.flatMap(row => Object.keys(row))));
+      const csvEscape = value => {
+        const text = value === null || value === undefined ? '' : String(value);
+        return /[",\n]/.test(text) ? `"${text.replace(/"/g,'""')}"` : text;
+      };
+      const lines = [columns.map(csvEscape).join(','), ...data.map(row => columns.map(col => csvEscape(row[col])).join(','))];
+      downloadBlob(`complisa_survey_${new Date().toISOString().slice(0,10)}.csv`, new Blob([lines.join('\n')], { type:'text/csv;charset=utf-8' }));
+    }
+
+    function exportXlsx() {
+      const data = filteredRows.map(flattenForExport);
+      if (!data.length) return showError(els.dashboardError, 'No filtered rows to export.');
+      const worksheet = XLSX.utils.json_to_sheet(data);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'responses');
+      XLSX.writeFile(workbook, `complisa_survey_${new Date().toISOString().slice(0,10)}.xlsx`);
+    }
+
+    async function attachRealtime() {
       if (realtimeChannel) {
         try { await supabaseClient.removeChannel(realtimeChannel); } catch {}
         realtimeChannel = null;
       }
       realtimeChannel = supabaseClient
         .channel('survey_responses_changes')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'survey_responses' }, () => {
-          loadRows().catch(err => console.error(err));
+        .on('postgres_changes', { event:'*', schema:'public', table:'survey_responses' }, () => {
+          loadRows().catch(error => showError(els.dashboardError, error?.message || 'Realtime refresh failed.'));
         })
-        .subscribe((status) => {
-          if (status === 'SUBSCRIBED') setStatus('Connected · live updates on');
+        .subscribe(status => {
+          if (status === 'SUBSCRIBED') setStatus('Connected - live updates on', 'ok');
         });
     }
 
-    async function bootstrap(){
+    async function bootstrap() {
       loadConfig();
       const client = ensureClient();
       if (!client) {
-        setStatus('Not connected · set Supabase config');
+        setStatus('Add Supabase config', 'warn');
         showLoggedOutUI();
         return;
       }
 
-      const { data: { session } } = await client.auth.getSession();
-      if (session) {
-        showAuthedUI();
-        await loadDashboardData();
-      } else {
+      const { data } = await client.auth.getSession();
+      if (data?.session) await loadDashboardData();
+      else {
         showLoggedOutUI();
-        setStatus('Connected · please log in');
+        setStatus('Connected - please log in', 'ok');
       }
     }
 
     els.saveConfigBtn.addEventListener('click', async () => {
       saveConfig();
-      showError('');
+      showError(els.authError, '');
       await bootstrap();
     });
 
+    els.clearConfigBtn.addEventListener('click', async () => {
+      clearConfig();
+      showError(els.authError, 'Config cleared. Add your Supabase URL and anon key before logging in.');
+      setStatus('Config cleared', 'warn');
+      showLoggedOutUI();
+    });
+
     els.loginBtn.addEventListener('click', async () => {
-      showError('');
+      showError(els.authError, '');
       const client = ensureClient();
-      if (!client) { showError('Missing Supabase config.'); return; }
+      if (!client) return showError(els.authError, 'Missing Supabase Project URL or anon key. Open connection settings below.');
+      if (!els.email.value || !els.password.value) return showError(els.authError, 'Enter both email and password.');
+
       els.loginBtn.disabled = true;
-      els.loginBtn.textContent = 'Logging in…';
+      els.loginBtn.textContent = 'Logging in...';
       try {
         const { error } = await client.auth.signInWithPassword({
           email: (els.email.value || '').trim(),
           password: els.password.value || ''
         });
         if (error) throw error;
-        showAuthedUI();
         await loadDashboardData();
-      } catch (e) {
-        showError(e?.message || 'Login failed.');
+      } catch (error) {
+        showError(els.authError, error?.message || 'Login failed.');
       } finally {
         els.loginBtn.disabled = false;
-        els.loginBtn.textContent = 'Log in';
+        els.loginBtn.textContent = 'Log in to dashboard';
       }
     });
 
     els.logoutBtn.addEventListener('click', async () => {
-      if (!supabaseClient) return;
-      await supabaseClient.auth.signOut();
+      if (realtimeChannel && supabaseClient) {
+        try { await supabaseClient.removeChannel(realtimeChannel); } catch {}
+        realtimeChannel = null;
+      }
+      if (supabaseClient) await supabaseClient.auth.signOut();
+      rowsCache = [];
+      filteredRows = [];
       showLoggedOutUI();
-      setStatus('Connected · logged out');
+      setStatus('Connected - logged out', 'ok');
     });
 
+    els.refreshBtn.addEventListener('click', () => loadDashboardData().catch(error => showError(els.dashboardError, error?.message || 'Refresh failed.')));
     els.exportCsvBtn.addEventListener('click', exportCsv);
     els.exportXlsxBtn.addEventListener('click', exportXlsx);
-    els.refreshBtn.addEventListener('click', () =>
-      loadDashboardData().catch(e => showError(e?.message || 'Refresh failed.'))
-    );
+    els.applyFiltersBtn.addEventListener('click', applyFilters);
+    els.resetFiltersBtn.addEventListener('click', resetFilters);
+    els.searchInput.addEventListener('input', () => window.clearTimeout(window.__filterTimer) || (window.__filterTimer = window.setTimeout(applyFilters, 180)));
+    els.roleFilter.addEventListener('change', applyFilters);
+    els.dateFrom.addEventListener('change', applyFilters);
+    els.dateTo.addEventListener('change', applyFilters);
 
-    bootstrap().catch(err => {
-      console.error(err);
-      setStatus('Error');
-      showError(err?.message || 'Unexpected error.');
+    bootstrap().catch(error => {
+      console.error(error);
+      showLoggedOutUI();
+      setStatus('Error', 'warn');
+      showError(els.authError, error?.message || 'Unexpected dashboard error.');
     });
   </script>
 </body>
 </html>
-
