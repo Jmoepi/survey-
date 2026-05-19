@@ -161,18 +161,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);line
     <div class="step-label">Getting started</div>
     <div class="step-title">Who are you completing this survey as?</div>
     <div class="role-grid">
-      <label class="role-card" id="role-employer" onclick="selectRole('employer')">
-        <input type="radio" name="role" value="employer">
+      <div class="role-card" id="role-employer" data-role="employer">
+        <input type="radio" name="role" value="employer" style="display:none">
         <div class="role-icon">🏢</div>
         <div class="role-title">Business owner / Employer</div>
         <div class="role-desc">I own or manage a business with employees in South Africa</div>
-      </label>
-      <label class="role-card" id="role-practitioner" onclick="selectRole('practitioner')">
-        <input type="radio" name="role" value="practitioner">
+      </div>
+      <div class="role-card" id="role-practitioner" data-role="practitioner">
+        <input type="radio" name="role" value="practitioner" style="display:none">
         <div class="role-icon">🧾</div>
         <div class="role-title">Accountant / Labour practitioner</div>
         <div class="role-desc">I manage payroll or compliance for multiple businesses</div>
-      </label>
+      </div>
     </div>
     <div class="val-error" id="err-role">Please select who you are before continuing.</div>
     <div class="nav-row">
@@ -588,11 +588,44 @@ let currentStep = 0;
 const employerSteps = ['step-0', 'step-E1', 'step-E2', 'step-E3', 'step-E4'];
 const practitionerSteps = ['step-0', 'step-P1', 'step-P2', 'step-P3'];
 
+// Set up role card click handlers
+document.addEventListener('DOMContentLoaded', function() {
+  const employerCard = document.getElementById('role-employer');
+  const practitionerCard = document.getElementById('role-practitioner');
+  
+  if (employerCard) {
+    employerCard.addEventListener('click', function() {
+      selectRole('employer');
+    });
+  }
+  
+  if (practitionerCard) {
+    practitionerCard.addEventListener('click', function() {
+      selectRole('practitioner');
+    });
+  }
+});
+
 function selectRole(role) {
   currentRole = role;
-  document.getElementById('role-employer').classList.toggle('selected', role === 'employer');
-  document.getElementById('role-practitioner').classList.toggle('selected', role === 'practitioner');
-  document.querySelector('input[name="role"][value="' + role + '"]').checked = true;
+  
+  // Update UI
+  const employerCard = document.getElementById('role-employer');
+  const practitionerCard = document.getElementById('role-practitioner');
+  
+  if (role === 'employer') {
+    if (employerCard) employerCard.classList.add('selected');
+    if (practitionerCard) practitionerCard.classList.remove('selected');
+  } else {
+    if (employerCard) employerCard.classList.remove('selected');
+    if (practitionerCard) practitionerCard.classList.add('selected');
+  }
+  
+  // Check the radio button
+  const radio = document.querySelector('input[name="role"][value="' + role + '"]');
+  if (radio) radio.checked = true;
+  
+  // Proceed to next step
   nextStep();
 }
 
