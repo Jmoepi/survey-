@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fintegris — UIF Compliance Validation Survey</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
   --teal:        #0B5E47;
@@ -573,6 +574,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);line
 </footer>
 
 <script>
+// Supabase client initialization (placeholders replaced at build time)
+const SUPABASE_URL = '__FINTEGRIS_TOKEN_SUPABASE_URL__';
+const SUPABASE_ANON_KEY = '__FINTEGRIS_TOKEN_SUPABASE_ANON_KEY__';
+let supabase = null;
+
+if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+}
+
 let currentRole = null;
 let currentStep = 0;
 const employerSteps = ['step-0', 'step-E1', 'step-E2', 'step-E3', 'step-E4'];
@@ -772,7 +782,7 @@ function showToast(message, type = 'error') {
   }, 3500);
 }
 
-function submitSurvey() {
+async function submitSurvey() {
   const steps = getSteps();
   const currentStepId = steps[currentStep];
   
@@ -799,6 +809,33 @@ function submitSurvey() {
     
     if (validationErrors.length > 0) {
       showToast('⚠ ' + validationErrors[0], 'warning');
+      return;
+    }
+  }
+  
+  // Collect responses and save to Supabase
+  const responses = collectAllResponses();
+  const roleLabel = currentRole === 'employer' ? 'Employer' : 'Practitioner';
+  
+  const rowData = {
+    role: roleLabel,
+    name: responses.contact.Name || responses.contact.name,
+    company: responses.contact.Company || responses.contact.Firm || null,
+    email: responses.contact.Email || responses.contact.email,
+    phone: responses.contact.Phone || responses.contact.phone,
+    payload: responses,
+    user_agent: navigator.userAgent
+  };
+  
+  // Save to Supabase if configured
+  if (supabase) {
+    const { error } = await supabase
+      .from('survey_responses')
+      .insert([rowData]);
+    
+    if (error) {
+      console.error('Supabase error:', error);
+      showToast('Error saving response. Please try again.', 'error');
       return;
     }
   }
