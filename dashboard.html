@@ -793,8 +793,18 @@
         ].filter(Boolean).join('<br>') || '<span class="muted">Anonymous</span>';
 
         const keySignals = row.role === 'Employer'
-          ? [p.e_q2 && `Province: ${p.e_q2}`, p.e_q5 && `uFiling: ${p.e_q5}`, p.e_q12 && `Automation: ${p.e_q12}`, p.e_q13 && `Pay: ${p.e_q13}`]
-          : [p.p_q1 && `Clients: ${p.p_q1}`, p.p_q4 && `Submission: ${p.p_q4}`, p.p_q7 && `Use platform: ${p.p_q7}`, p.p_q8 && `Pay: ${p.p_q8}`];
+          ? [
+              p.answers && p.answers['Q2: Province'] && `Province: ${p.answers['Q2: Province']}`,
+              p.answers && p.answers['Q5: uFiling Registration'] && `uFiling: ${p.answers['Q5: uFiling Registration']}`,
+              p.answers && p.answers['Q12: Fintegris Value'] && `Automation: ${p.answers['Q12: Fintegris Value']}`,
+              p.answers && p.answers['Q13: Willingness to Pay'] && `Pay: ${p.answers['Q13: Willingness to Pay']}`
+            ]
+          : [
+              p.answers && p.answers['P1: Number of Clients'] && `Clients: ${p.answers['P1: Number of Clients']}`,
+              p.answers && p.answers['P4: UIF Declaration Method'] && `Submission: ${p.answers['P4: UIF Declaration Method']}`,
+              p.answers && p.answers['P7: Platform Usage'] && `Use platform: ${p.answers['P7: Platform Usage']}`,
+              p.answers && p.answers['P8: Pricing Preference'] && `Pay: ${p.answers['P8: Pricing Preference']}`
+            ];
 
         return `
           <tr>
