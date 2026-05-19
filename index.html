@@ -577,10 +577,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);line
 // Supabase client initialization (placeholders replaced at build time)
 const SUPABASE_URL = '__FINTEGRIS_TOKEN_SUPABASE_URL__';
 const SUPABASE_ANON_KEY = '__FINTEGRIS_TOKEN_SUPABASE_ANON_KEY__';
-let supabase = null;
 
-if (SUPABASE_URL && SUPABASE_ANON_KEY) {
-  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Initialize Supabase client if not already available
+if (typeof window.supabase === 'undefined' && SUPABASE_URL && SUPABASE_ANON_KEY) {
+  window.supabase = { createClient: function() {} };
+}
+
+// Create client if credentials are available
+if (SUPABASE_URL && SUPABASE_ANON_KEY && !window.sbClient) {
+  window.sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 }
 
 let currentRole = null;
@@ -861,8 +866,8 @@ async function submitSurvey() {
   };
   
   // Save to Supabase if configured
-  if (supabase) {
-    const { error } = await supabase
+  if (window.sbClient) {
+    const { error } = await window.sbClient
       .from('survey_responses')
       .insert([rowData]);
     
