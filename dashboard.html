@@ -422,6 +422,14 @@
               <tbody id="tbody"></tbody>
             </table>
           </div>
+          <div id="paginationControls" style="margin-top:15px; display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:14px;">
+            <div>
+              <button type="button" id="prevPageBtn" class="btn small" style="margin-right:5px;">← Previous</button>
+              <span id="pageInfo" style="display:inline-block; min-width:100px; text-align:center;">Page 1</span>
+              <button type="button" id="nextPageBtn" class="btn small" style="margin-left:5px;">Next →</button>
+            </div>
+            <span id="pageStats" style="color:#666;">0-0 of 0</span>
+          </div>
           <div class="hint" style="margin-top:10px">Realtime works when Supabase Realtime is enabled for <span class="mono">survey_responses</span>. Refresh still works even without Realtime.</div>
         </div>
       </section>
@@ -494,6 +502,8 @@
     let totalAvailableCount = 0;
     let charts = {};
     let activeModalRow = null;
+    let currentPage = 1;
+    const ITEMS_PER_PAGE = 10;
 
     function deployOrEmpty(value) {
       if (!value || String(value).includes('__COMPLISA_TOKEN_')) return '';
@@ -777,13 +787,31 @@
       els.insightRecent.textContent = String(recent);
     }
 
+    function updatePaginationControls() {
+      const totalPages = Math.ceil(filteredRows.length / ITEMS_PER_PAGE) || 1;
+      const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
+      const endIdx = Math.min(startIdx + ITEMS_PER_PAGE, filteredRows.length);
+      
+      els.prevPageBtn.disabled = currentPage === 1;
+      els.nextPageBtn.disabled = currentPage === totalPages;
+      els.pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+      els.pageStats.textContent = `${startIdx + 1}-${endIdx} of ${filteredRows.length}`;
+    }
+
     function renderTable() {
       if (!filteredRows.length) {
         els.tbody.innerHTML = `<tr><td colspan="5"><div class="empty"><strong>No responses found</strong><span>Try clearing filters, refreshing, or checking the Supabase allowlist/RLS setup.</span></div></td></tr>`;
+        document.getElementById('paginationControls').style.display = 'none';
         return;
       }
+      
+      document.getElementById('paginationControls').style.display = 'flex';
+      const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
+      const endIdx = startIdx + ITEMS_PER_PAGE;
+      const paginatedRows = filteredRows.slice(startIdx, endIdx);
+      updatePaginationControls();
 
-      els.tbody.innerHTML = filteredRows.map(row => {
+      els.tbody.innerHTML = paginatedRows.map(row => {
         const p = row.payload || {};
         const contact = [
           row.name ? `<strong>${escapeHtml(row.name)}</strong>` : '',
